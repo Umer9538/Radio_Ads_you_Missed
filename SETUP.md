@@ -21,55 +21,45 @@ The project foundation has been successfully set up with the following:
 
 ### 1. Database Setup
 
-You need to set up a PostgreSQL database. Choose one of these options:
+**Great news!** The project uses **SQLite** for the database, which means:
+- ✅ No separate database server needed
+- ✅ No installation required
+- ✅ Database file is automatically created
+- ✅ Perfect for development and small-to-medium deployments
 
-#### Option A: Local PostgreSQL
-```bash
-# Install PostgreSQL locally
-# macOS
-brew install postgresql
-brew services start postgresql
+The database file (`dev.db`) is already created in the `prisma/` folder and ready to use!
 
-# Create database
-createdb radio_ads_db
-```
-
-#### Option B: Supabase (Recommended)
-1. Go to [https://supabase.com](https://supabase.com)
-2. Create a new project
-3. Get your database connection string
-4. Update `.env.local` with the connection string
-
-#### Option C: Neon (Serverless)
-1. Go to [https://neon.tech](https://neon.tech)
-2. Create a new project
-3. Copy the connection string
-4. Update `.env.local`
+#### For Production (Optional):
+If you need to scale, you can switch to PostgreSQL later by:
+- Updating the datasource in `prisma/schema.prisma`
+- Using Supabase, Neon, or any PostgreSQL provider
 
 ### 2. Update Environment Variables
 
-Edit `.env.local` with your actual database URL:
+The `.env.local` file is already configured with SQLite:
 
 ```bash
-DATABASE_URL="postgresql://user:password@host:5432/database?schema=public"
-NEXTAUTH_SECRET="generate-a-32-char-secret-key-here"
+DATABASE_URL="file:./dev.db"  # ✅ Already set up
+NEXTAUTH_SECRET="development-secret-key-change-in-production-min-32-chars"
 ```
 
-Generate a secure NEXTAUTH_SECRET:
+For production, generate a secure NEXTAUTH_SECRET:
 ```bash
 openssl rand -base64 32
 ```
 
-### 3. Generate Prisma Client and Push Schema
+### 3. Database is Ready!
+
+The database has already been created and the Prisma client generated. You can:
 
 ```bash
-# Generate Prisma client
-npm run db:generate
+# View your database in a GUI
+npm run db:studio
 
-# Push schema to database (for development)
+# If you make schema changes, push them with:
 npm run db:push
 
-# OR run migrations (for production)
+# Or create a migration (for version control):
 npm run db:migrate
 ```
 
@@ -248,10 +238,14 @@ prisma/
 npm run db:generate
 ```
 
-### Database Connection Errors
-- Check your `DATABASE_URL` in `.env.local`
-- Ensure PostgreSQL is running
-- Verify database credentials
+### Database File Missing
+The database file should be at `prisma/dev.db`. If missing:
+```bash
+npm run db:push
+```
+
+### Permission Errors
+Ensure the `prisma/` directory is writable
 
 ### Build Errors
 ```bash

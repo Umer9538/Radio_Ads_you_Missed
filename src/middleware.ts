@@ -7,11 +7,26 @@ export default auth((req) => {
   const userRole = req.auth?.user?.role
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/auth/signin", "/auth/signup", "/auth/error"]
+  const publicRoutes = [
+    "/",
+    "/search",
+    "/ads",
+    "/stations",
+    "/categories",
+    "/auth/signin",
+    "/auth/signup",
+    "/auth/error",
+  ]
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 
   // API routes that are public
-  const publicApiRoutes = ["/api/auth", "/api/ads"] // GET ads should be public
+  const publicApiRoutes = [
+    "/api/auth",
+    "/api/ads",
+    "/api/stations",
+    "/api/categories",
+    "/api/offers",
+  ]
   const isPublicApiRoute = publicApiRoutes.some((route) =>
     pathname.startsWith(route)
   )

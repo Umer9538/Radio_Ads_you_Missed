@@ -1,8 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
-import prisma from "@/lib/prisma"
 import { compare } from "bcryptjs"
 import { UserRole } from "@/generated/prisma"
 
@@ -21,7 +19,7 @@ declare module "next-auth" {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // No adapter needed for JWT strategy - reduces Edge Runtime issues
   session: {
     strategy: "jwt",
   },
@@ -40,6 +38,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials")
         }
+
+        // Dynamic import to avoid Edge Runtime issues
+        const prisma = (await import("@/lib/prisma")).default
 
         const user = await prisma.user.findUnique({
           where: {
@@ -106,9 +107,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   events: {
     async signIn({ user, isNewUser }) {
       if (isNewUser) {
+        // Dynamic import to avoid Edge Runtime issues
+        const prisma = (await import("@/lib/prisma")).default
+
         // Handle new user registration
         await prisma.user.update({
-          where: { id: user.id },
+          where: { id: user.id! },
           data: { lastLogin: new Date() },
         })
       }

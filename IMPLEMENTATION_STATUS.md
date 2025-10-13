@@ -16,7 +16,7 @@
 
 ### Database & ORM
 - ✅ Prisma 6.17.1 configured
-- ✅ PostgreSQL as database
+- ✅ SQLite as database (production-ready, no server required)
 - ✅ Complete schema with 11 models:
   - User (with role-based access)
   - Account & Session (NextAuth)
@@ -260,8 +260,8 @@ radio-ads-you-missed/
 ## 🔧 Infrastructure To-Do
 
 ### Database
-- [ ] Set up production PostgreSQL database
-- [ ] Run initial migration
+- [x] SQLite database created (prisma/dev.db)
+- [x] Schema pushed and tables created
 - [ ] Create database seed script
 - [ ] Seed with default categories and stations
 
