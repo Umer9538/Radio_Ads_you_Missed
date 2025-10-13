@@ -189,7 +189,7 @@ export default function ProfilePage() {
           className="mb-8"
         >
           <GlassmorphicCard className="p-8">
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               {/* Avatar */}
               <div className="relative">
                 <motion.div
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                   {profile.firstName} {profile.lastName}
                 </h2>
                 <p className="text-gray-400 mb-2">{profile.email}</p>
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                   <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 font-semibold">
                     {profile.role}
                   </span>
@@ -226,6 +226,11 @@ export default function ProfilePage() {
                     <span>Last login: {new Date(profile.lastLogin).toLocaleDateString()}</span>
                   )}
                 </div>
+              </div>
+
+              {/* Sign Out Button */}
+              <div className="w-full sm:w-auto">
+                <SignOutButton className="w-full" />
               </div>
             </div>
           </GlassmorphicCard>
