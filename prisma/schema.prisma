@@ -1,0 +1,359 @@
+// Radio Ads You Missed - Database Schema
+// This schema defines all models for the platform
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum OfferRedemptionType {
+  URL
+  CODE
+  QR_CODE
+  FORM
+  IN_STORE
+}
+
+enum AlertType {
+  BRAND
+  CATEGORY
+  KEYWORD
+  STATION
+}
+
+enum AdStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  PENDING_REVIEW
+}
+
+// User Model
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified DateTime?
+  password      String?  // Nullable for OAuth users
+  firstName     String?
+  lastName      String?
+  role          UserRole @default(USER)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLogin     DateTime?
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  favorites     Favorite[]
+  claims        Claim[]
+  alerts        Alert[]
+  playHistory   PlayHistory[]
+  searchHistory SearchHistory[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// NextAuth Account Model (for OAuth)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// NextAuth Session Model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Verification Token for email verification
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Station Model
+model Station {
+  id          String   @id @default(cuid())
+  name        String
+  frequency   String?
+  location    String   // City/Region
+  logoUrl     String?
+  websiteUrl  String?
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ads         Ad[]
+  alerts      Alert[]
+
+  @@index([name])
+  @@index([active])
+  @@map("stations")
+}
+
+// Category Model
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  parentId    String?  // For hierarchical categories
+  iconUrl     String?
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  ads         Ad[]
+  alerts      Alert[]
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([active])
+  @@map("categories")
+}
+
+// Ad Model
+model Ad {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  transcript      String?
+  audioUrl        String
+  duration        Int       // in seconds
+  thumbnailUrl    String?
+
+  // Metadata
+  brand           String
+  product         String?
+  stationId       String
+  categoryId      String
+  tags            String?   // JSON array of tags stored as string
+
+  // Air information
+  airDate         DateTime
+  airTime         String?
+
+  // Status
+  status          AdStatus  @default(PUBLISHED)
+
+  // Analytics
+  playCount       Int       @default(0)
+
+  // Timestamps for offer
+  offerTimestamp  Int?      // Seconds into ad where offer is mentioned
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  publishedAt     DateTime?
+
+  // Relations
+  station         Station   @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  category        Category  @relation(fields: [categoryId], references: [id])
+  offers          Offer[]
+  favorites       Favorite[]
+  playHistory     PlayHistory[]
+
+  @@index([stationId])
+  @@index([categoryId])
+  @@index([brand])
+  @@index([airDate])
+  @@index([status])
+  @@index([createdAt])
+  @@map("ads")
+}
+
+// Offer Model
+model Offer {
+  id                String               @id @default(cuid())
+  adId              String
+  title             String
+  description       String
+  terms             String?
+  expiryDate        DateTime?
+  redemptionType    OfferRedemptionType
+  redemptionValue   String?              // URL, promo code, or QR code data
+  maxClaims         Int?                 // Null = unlimited
+  claimCount        Int                  @default(0)
+  active            Boolean              @default(true)
+
+  // Additional fields
+  discountPercent   Int?
+  discountAmount    Float?
+  originalPrice     Float?
+
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  // Relations
+  ad                Ad                   @relation(fields: [adId], references: [id], onDelete: Cascade)
+  claims            Claim[]
+
+  @@index([adId])
+  @@index([expiryDate])
+  @@index([active])
+  @@map("offers")
+}
+
+// Claim Model
+model Claim {
+  id              String    @id @default(cuid())
+  userId          String
+  offerId         String
+  claimedAt       DateTime  @default(now())
+  redeemed        Boolean   @default(false)
+  redeemedAt      DateTime?
+
+  // Additional info
+  ipAddress       String?
+  userAgent       String?
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer           Offer     @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, offerId]) // One claim per user per offer
+  @@index([userId])
+  @@index([offerId])
+  @@index([claimedAt])
+  @@map("claims")
+}
+
+// Favorite Model
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  adId      String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ad        Ad       @relation(fields: [adId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, adId])
+  @@index([userId])
+  @@index([adId])
+  @@map("favorites")
+}
+
+// Alert Model
+model Alert {
+  id         String    @id @default(cuid())
+  userId     String
+  type       AlertType
+  value      String    // Brand name, category slug, keyword, or station ID
+
+  // Optional relations
+  stationId  String?
+  categoryId String?
+
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station    Station?  @relation(fields: [stationId], references: [id], onDelete: SetNull)
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([type])
+  @@index([active])
+  @@map("alerts")
+}
+
+// PlayHistory Model (for analytics)
+model PlayHistory {
+  id            String   @id @default(cuid())
+  userId        String?  // Nullable for anonymous users
+  adId          String
+  playedAt      DateTime @default(now())
+  duration      Int?     // How long they listened (seconds)
+  completed     Boolean  @default(false)
+
+  // Analytics
+  ipAddress     String?
+  userAgent     String?
+  referrer      String?
+  deviceType    String?  // mobile, tablet, desktop
+
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ad            Ad       @relation(fields: [adId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([adId])
+  @@index([playedAt])
+  @@map("play_history")
+}
+
+// SearchHistory Model
+model SearchHistory {
+  id         String   @id @default(cuid())
+  userId     String?  // Nullable for anonymous users
+  query      String
+  filters    Json?    // Store applied filters as JSON
+  resultCount Int     @default(0)
+  searchedAt DateTime @default(now())
+
+  // Analytics
+  ipAddress  String?
+
+  // Relations
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([query])
+  @@index([searchedAt])
+  @@map("search_history")
+}
