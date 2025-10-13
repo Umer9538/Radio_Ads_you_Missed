@@ -5,7 +5,7 @@ import { ReactNode, useRef } from 'react'
 import { cn } from '@/utils/helpers'
 
 interface GlassmorphicCardProps {
-  children: ReactNode
+  children?: ReactNode
   className?: string
   glowColor?: string
   tiltIntensity?: number

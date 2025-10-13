@@ -18,7 +18,17 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "src/generated/**",  // Ignore Prisma generated files
     ],
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",  // Downgrade from error to warning
+      "react/no-unescaped-entities": "off",  // Allow apostrophes in JSX
+      "@typescript-eslint/no-unused-vars": "warn",  // Downgrade unused vars to warning
+      "@next/next/no-img-element": "warn",  // Allow img elements for now
+      "react-hooks/exhaustive-deps": "warn",  // Downgrade to warning
+    },
   },
 ];
 

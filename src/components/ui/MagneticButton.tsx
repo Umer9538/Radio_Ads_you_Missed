@@ -9,13 +9,17 @@ interface MagneticButtonProps {
   className?: string
   onClick?: () => void
   magneticStrength?: number
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
 }
 
 export default function MagneticButton({
   children,
   className,
   onClick,
-  magneticStrength = 0.3
+  magneticStrength = 0.3,
+  type = 'button',
+  disabled = false
 }: MagneticButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const x = useMotionValue(0)
@@ -46,6 +50,8 @@ export default function MagneticButton({
   return (
     <motion.button
       ref={buttonRef}
+      type={type}
+      disabled={disabled}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -59,10 +65,11 @@ export default function MagneticButton({
         'hover:shadow-purple-500/80 hover:scale-105',
         'active:scale-95',
         'overflow-hidden group',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
         className
       )}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: disabled ? 1 : 1.05 }}
+      whileTap={{ scale: disabled ? 1 : 0.95 }}
     >
       {/* Animated gradient background */}
       <motion.div

@@ -52,8 +52,12 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       onplay: () => set({ isPlaying: true }),
       onpause: () => set({ isPlaying: false }),
       onend: () => set({ isPlaying: false, currentTime: 0 }),
-      onload: function() {
-        set({ duration: this.duration() })
+      onload: () => {
+        // Get duration after load
+        const loadedHowl = get().howl
+        if (loadedHowl) {
+          set({ duration: loadedHowl.duration() })
+        }
       },
       onloaderror: (id, error) => {
         console.error('Audio load error:', error)

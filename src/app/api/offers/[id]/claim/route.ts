@@ -31,7 +31,7 @@ export async function POST(
     }
 
     // Check if offer has expired
-    if (offer.expiresAt && new Date(offer.expiresAt) < new Date()) {
+    if (offer.expiryDate && new Date(offer.expiryDate) < new Date()) {
       return NextResponse.json(
         { success: false, error: 'Offer has expired' },
         { status: 400 }
