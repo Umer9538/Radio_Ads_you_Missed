@@ -227,26 +227,6 @@ export default function SignInPage() {
             </Link>
           </p>
         </motion.div>
-
-        {/* Demo Credentials */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-6"
-        >
-          <GlassmorphicCard className="p-4">
-            <p className="text-xs text-[#64748b] text-center mb-2">Demo Credentials:</p>
-            <div className="space-y-1 text-xs text-[#94a3b8]">
-              <p className="text-center">
-                <span className="text-[#00d4ff]">Admin:</span> admin@radioadsmissed.co.nz / admin123
-              </p>
-              <p className="text-center">
-                <span className="text-[#00ff88]">User:</span> demo@radioadsmissed.co.nz / demo123
-              </p>
-            </div>
-          </GlassmorphicCard>
-        </motion.div>
       </div>
     </div>
   )
