@@ -94,21 +94,29 @@ export default function DashboardPage() {
       {/* Background gradient - matches hero section */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
 
-      {/* Large atmospheric glows - positioned like hero section */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/20 rounded-full blur-[150px]" />
-      <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-[#00d4ff]/15 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
+      {/* Large atmospheric glows - matching hero section with prominent red/pink */}
+      <div className="absolute top-0 right-1/4 w-[900px] h-[900px] bg-[#ff1b6b]/40 rounded-full blur-[200px]" />
+      <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-[#ff4d8f]/35 rounded-full blur-[180px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/15 rounded-full blur-[150px]" />
+      <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
 
-      {/* Radio Tower Silhouette - Large and prominent like in hero */}
-      <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-40">
+      {/* Radio Tower Silhouette - Subtle like hero section */}
+      <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-25">
         <svg
           width="800"
           height="900"
           viewBox="0 0 800 900"
           fill="none"
           className="absolute bottom-0 right-0 md:right-20"
-          style={{ filter: 'drop-shadow(0 0 30px rgba(255, 27, 107, 0.3))' }}
+          style={{ filter: 'drop-shadow(0 0 80px rgba(255, 27, 107, 0.8)) drop-shadow(0 0 120px rgba(255, 77, 143, 0.6))' }}
         >
+          {/* Strong red glow around tower top */}
+          <circle cx="400" cy="100" r="130" fill="#ff1b6b" opacity="0.15">
+            <animate attributeName="opacity" values="0.15;0.25;0.15" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="400" cy="140" r="180" fill="#ff4d8f" opacity="0.1">
+            <animate attributeName="opacity" values="0.1;0.2;0.1" dur="4s" repeatCount="indefinite" />
+          </circle>
           {/* Main Tower Structure - Larger lattice design */}
           <g opacity="0.8">
             {/* Left side of tower */}
@@ -209,8 +217,9 @@ export default function DashboardPage() {
           <defs>
             <linearGradient id="towerGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.9" />
-              <stop offset="40%" stopColor="#ff6b00" stopOpacity="0.7" />
-              <stop offset="70%" stopColor="#00d4ff" stopOpacity="0.5" />
+              <stop offset="30%" stopColor="#ff4d8f" stopOpacity="0.75" />
+              <stop offset="60%" stopColor="#ff6b00" stopOpacity="0.6" />
+              <stop offset="80%" stopColor="#00d4ff" stopOpacity="0.4" />
               <stop offset="100%" stopColor="#00ff88" stopOpacity="0.3" />
             </linearGradient>
           </defs>
