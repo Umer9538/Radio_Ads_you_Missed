@@ -116,23 +116,23 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/80 to-[#0a0f1e]" />
 
-        {/* Large atmospheric glows - matching reference design with more red/pink */}
-        <div className="absolute top-0 right-1/4 w-[900px] h-[900px] bg-[#ff1b6b]/40 rounded-full blur-[200px]" />
-        <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-[#ff4d8f]/35 rounded-full blur-[180px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/15 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
+        {/* Large atmospheric glows - darker and more subtle */}
+        <div className="absolute top-0 right-1/4 w-[900px] h-[900px] bg-[#ff1b6b]/20 rounded-full blur-[200px]" />
+        <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-[#ff4d8f]/18 rounded-full blur-[180px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-[#00ff88]/6 rounded-full blur-[180px]" />
 
-        {/* Radio Tower Silhouette - More subtle like reference */}
-        <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-25">
+        {/* Radio Tower Silhouette - Centered and darker */}
+        <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-30">
           <svg
             width="900"
             height="1000"
             viewBox="0 0 900 1000"
             fill="none"
-            className="absolute bottom-0 right-0 md:right-10"
-            style={{ filter: 'drop-shadow(0 0 80px rgba(255, 27, 107, 0.8)) drop-shadow(0 0 120px rgba(255, 77, 143, 0.6))' }}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2"
+            style={{ filter: 'drop-shadow(0 0 60px rgba(255, 27, 107, 0.5)) drop-shadow(0 0 100px rgba(255, 77, 143, 0.4))' }}
           >
             {/* Strong red glow around tower top */}
             <circle cx="450" cy="100" r="150" fill="#ff1b6b" opacity="0.15">
@@ -296,7 +296,7 @@ export default function HomePage() {
             >
               <Link href="/search">
                 <motion.button
-                  className="px-8 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-lg hover:opacity-90 transition-all flex items-center gap-2"
+                  className="px-8 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-lg hover:opacity-90 transition-all flex items-center gap-2 animate-ambulance"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

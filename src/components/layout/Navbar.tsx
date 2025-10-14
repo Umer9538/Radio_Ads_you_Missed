@@ -29,26 +29,22 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            {/* Radio Icon */}
-            <div className="relative">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#gradient)" />
-                <path d="M12 16h8M16 12v8" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="20" cy="12" r="1" fill="white" />
-                <circle cx="12" cy="20" r="1" fill="white" />
-                <defs>
-                  <linearGradient id="gradient" x1="4" y1="4" x2="28" y2="28">
-                    <stop stopColor="#00d4ff" />
-                    <stop offset="1" stopColor="#00ff88" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              {/* Waveform lines */}
-              <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex gap-0.5">
-                <div className="w-0.5 h-2 bg-[#00d4ff] rounded-full animate-pulse"></div>
-                <div className="w-0.5 h-3 bg-[#00d4ff] rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-0.5 h-1.5 bg-[#00d4ff] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <Link href="/" className="flex items-center gap-3 group">
+            {/* Waveform Icon */}
+            <div className="relative flex items-end gap-1 h-8">
+              {/* Main waveform bars */}
+              <div className="flex items-end gap-1">
+                <div className="w-1.5 h-4 bg-[#00d4ff] rounded-full animate-wave-bar"></div>
+                <div className="w-1.5 h-6 bg-[#00d4ff] rounded-full animate-wave-bar" style={{ animationDelay: '0.05s' }}></div>
+                <div className="w-1.5 h-5 bg-[#00d4ff] rounded-full animate-wave-bar" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-1.5 h-7 bg-[#00d4ff] rounded-full animate-wave-bar" style={{ animationDelay: '0.15s' }}></div>
+                <div className="w-1.5 h-5 bg-[#00d4ff] rounded-full animate-wave-bar" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+              {/* Green signal waves - positioned at top right */}
+              <div className="absolute -top-0.5 -right-3 flex items-end gap-0.5 h-4">
+                <div className="w-0.5 h-2 bg-[#00ff88] rounded-full animate-wave-bar" style={{ animationDelay: '0.25s' }}></div>
+                <div className="w-0.5 h-3 bg-[#00ff88] rounded-full animate-wave-bar" style={{ animationDelay: '0.3s' }}></div>
+                <div className="w-0.5 h-2 bg-[#00ff88] rounded-full animate-wave-bar" style={{ animationDelay: '0.35s' }}></div>
               </div>
             </div>
             {/* Logo Text */}
