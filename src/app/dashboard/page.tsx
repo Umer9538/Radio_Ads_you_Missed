@@ -91,59 +91,134 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
-      {/* Background gradient */}
+      {/* Background gradient - matches hero section */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
 
-      {/* Radio Tower Silhouette */}
-      <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-30">
+      {/* Large atmospheric glows - positioned like hero section */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/20 rounded-full blur-[150px]" />
+      <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-[#00d4ff]/15 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
+
+      {/* Radio Tower Silhouette - Large and prominent like in hero */}
+      <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-40">
         <svg
-          width="400"
-          height="600"
-          viewBox="0 0 400 600"
+          width="800"
+          height="900"
+          viewBox="0 0 800 900"
           fill="none"
-          className="absolute bottom-0"
+          className="absolute bottom-0 right-0 md:right-20"
+          style={{ filter: 'drop-shadow(0 0 30px rgba(255, 27, 107, 0.3))' }}
         >
-          {/* Tower Structure */}
-          <path
-            d="M200 50 L220 550 L180 550 Z"
-            fill="url(#towerGradient)"
-            opacity="0.6"
-          />
-          {/* Cross beams */}
-          <line x1="190" y1="150" x2="210" y2="150" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
-          <line x1="188" y1="250" x2="212" y2="250" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
-          <line x1="186" y1="350" x2="214" y2="350" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
-          <line x1="184" y1="450" x2="216" y2="450" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
+          {/* Main Tower Structure - Larger lattice design */}
+          <g opacity="0.8">
+            {/* Left side of tower */}
+            <line x1="320" y1="100" x2="360" y2="850" stroke="url(#towerGradient2)" strokeWidth="6" />
+            <line x1="480" y1="100" x2="440" y2="850" stroke="url(#towerGradient2)" strokeWidth="6" />
 
-          {/* Antenna on top */}
-          <line x1="200" y1="10" x2="200" y2="50" stroke="url(#towerGradient)" strokeWidth="3" opacity="0.6" />
-          <circle cx="200" cy="10" r="4" fill="#ff1b6b" opacity="0.8">
-            <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+            {/* Horizontal beams - creating lattice structure */}
+            {[150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800].map((y, i) => {
+              const leftX = 320 + (40 / 750) * (y - 100)
+              const rightX = 480 - (40 / 750) * (y - 100)
+              const beamWidth = rightX - leftX
+              return (
+                <g key={i}>
+                  <line
+                    x1={leftX}
+                    y1={y}
+                    x2={rightX}
+                    y2={y}
+                    stroke="url(#towerGradient2)"
+                    strokeWidth="3"
+                    opacity="0.6"
+                  />
+                  {/* Diagonal cross beams */}
+                  {i % 2 === 0 && (
+                    <>
+                      <line
+                        x1={leftX}
+                        y1={y}
+                        x2={rightX}
+                        y2={y + 50}
+                        stroke="url(#towerGradient2)"
+                        strokeWidth="2"
+                        opacity="0.4"
+                      />
+                      <line
+                        x1={rightX}
+                        y1={y}
+                        x2={leftX}
+                        y2={y + 50}
+                        stroke="url(#towerGradient2)"
+                        strokeWidth="2"
+                        opacity="0.4"
+                      />
+                    </>
+                  )}
+                </g>
+              )
+            })}
+          </g>
+
+          {/* Antenna Mast on top */}
+          <line x1="400" y1="20" x2="400" y2="100" stroke="url(#towerGradient2)" strokeWidth="4" opacity="0.9" />
+
+          {/* Red blinking light at top */}
+          <circle cx="400" cy="20" r="8" fill="#ff1b6b" opacity="0.9">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="400" cy="20" r="16" fill="#ff1b6b" opacity="0.4">
+            <animate attributeName="opacity" values="0.4;0;0.4" dur="1.5s" repeatCount="indefinite" />
+            <animate attributeName="r" values="16;24;16" dur="1.5s" repeatCount="indefinite" />
           </circle>
 
-          {/* Signal waves */}
-          <circle cx="200" cy="30" r="15" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.3">
-            <animate attributeName="r" values="15;30;45" dur="3s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.6;0.2;0" dur="3s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="200" cy="30" r="15" stroke="#00ff88" strokeWidth="1" fill="none" opacity="0.3">
-            <animate attributeName="r" values="15;30;45" dur="3s" begin="1s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.6;0.2;0" dur="3s" begin="1s" repeatCount="indefinite" />
-          </circle>
+          {/* Signal waves emanating from top */}
+          <g opacity="0.6">
+            {[0, 1, 2].map((i) => (
+              <circle
+                key={i}
+                cx="400"
+                cy="60"
+                r="30"
+                stroke="#00d4ff"
+                strokeWidth="2"
+                fill="none"
+                opacity="0.4"
+              >
+                <animate
+                  attributeName="r"
+                  values="30;80;120"
+                  dur="4s"
+                  begin={`${i * 1.3}s`}
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="opacity"
+                  values="0.6;0.3;0"
+                  dur="4s"
+                  begin={`${i * 1.3}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            ))}
+          </g>
+
+          {/* Platform at various heights */}
+          <rect x="350" y="400" width="100" height="4" fill="url(#towerGradient2)" opacity="0.7" />
+          <rect x="355" y="650" width="90" height="4" fill="url(#towerGradient2)" opacity="0.7" />
 
           <defs>
-            <linearGradient id="towerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.4" />
-              <stop offset="50%" stopColor="#00d4ff" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#00ff88" stopOpacity="0.2" />
+            <linearGradient id="towerGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.9" />
+              <stop offset="40%" stopColor="#ff6b00" stopOpacity="0.7" />
+              <stop offset="70%" stopColor="#00d4ff" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#00ff88" stopOpacity="0.3" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      {/* Animated background elements */}
+      {/* Foreground atmospheric effects */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute top-40 right-10 w-96 h-96 bg-[#ff1b6b]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#00ff88]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
