@@ -59,11 +59,11 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center py-12">
+    <div className="min-h-screen relative overflow-hidden bg-[#0a0f1e] flex items-center justify-center py-12">
       {/* Animated background */}
       <FloatingParticles count={40} />
-      <MorphingBlob className="top-0 left-0" color="from-blue-500 to-cyan-500" size={500} />
-      <MorphingBlob className="bottom-0 right-0" color="from-purple-500 to-pink-500" size={600} />
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00ff88]/10 rounded-full blur-[150px]" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[150px]" />
 
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Logo/Title */}
@@ -86,10 +86,11 @@ export default function SignUpPage() {
           >
             📻
           </motion.div>
-          <HolographicText as="h1" className="text-4xl mb-2">
-            Join Us Today
-          </HolographicText>
-          <p className="text-gray-300">
+          <h1 className="text-4xl font-bold mb-2">
+            <span className="text-white">Join Us </span>
+            <span className="bg-gradient-to-r from-[#00ff88] to-[#00d4ff] bg-clip-text text-transparent">Today</span>
+          </h1>
+          <p className="text-[#94a3b8]">
             Create your account and never miss a radio ad again
           </p>
         </motion.div>
@@ -116,11 +117,11 @@ export default function SignUpPage() {
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                     First Name
                   </label>
                   <div className="relative">
-                    <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                     <input
                       type="text"
                       name="firstName"
@@ -128,17 +129,17 @@ export default function SignUpPage() {
                       onChange={handleChange}
                       required
                       placeholder="John"
-                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00ff88] transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                     Last Name
                   </label>
                   <div className="relative">
-                    <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <FiUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                     <input
                       type="text"
                       name="lastName"
@@ -146,7 +147,7 @@ export default function SignUpPage() {
                       onChange={handleChange}
                       required
                       placeholder="Doe"
-                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00ff88] transition-all"
                     />
                   </div>
                 </div>
@@ -154,11 +155,11 @@ export default function SignUpPage() {
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                   <input
                     type="email"
                     name="email"
@@ -166,18 +167,18 @@ export default function SignUpPage() {
                     onChange={handleChange}
                     required
                     placeholder="your@email.com"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00ff88] transition-all"
                   />
                 </div>
               </div>
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                   <input
                     type="password"
                     name="password"
@@ -185,18 +186,18 @@ export default function SignUpPage() {
                     onChange={handleChange}
                     required
                     placeholder="Create a strong password"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00ff88] transition-all"
                   />
                 </div>
               </div>
 
               {/* Confirm Password Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                   <input
                     type="password"
                     name="confirmPassword"
@@ -204,7 +205,7 @@ export default function SignUpPage() {
                     onChange={handleChange}
                     required
                     placeholder="Confirm your password"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00ff88] transition-all"
                   />
                 </div>
               </div>
@@ -215,15 +216,15 @@ export default function SignUpPage() {
                   <input
                     type="checkbox"
                     required
-                    className="w-4 h-4 rounded border-2 border-white/20 bg-white/10 mt-1"
+                    className="w-4 h-4 rounded border-2 border-[#2a2f3e] bg-[#0a0f1e] mt-1"
                   />
-                  <span className="text-sm text-gray-300">
+                  <span className="text-sm text-[#94a3b8]">
                     I agree to the{' '}
-                    <Link href="/terms" className="text-purple-400 hover:text-purple-300">
+                    <Link href="/terms" className="text-[#00ff88] hover:text-[#00d4ff]">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
+                    <Link href="/privacy" className="text-[#00ff88] hover:text-[#00d4ff]">
                       Privacy Policy
                     </Link>
                   </span>
@@ -267,7 +268,7 @@ export default function SignUpPage() {
             {/* Social Signup */}
             <button
               type="button"
-              className="w-full px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white hover:border-[#00ff88] transition-all flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -299,11 +300,11 @@ export default function SignUpPage() {
           transition={{ delay: 0.4 }}
           className="text-center mt-6"
         >
-          <p className="text-gray-300">
+          <p className="text-[#94a3b8]">
             Already have an account?{' '}
             <Link
               href="/auth/signin"
-              className="text-purple-400 hover:text-purple-300 font-semibold transition-colors"
+              className="text-[#00ff88] hover:text-[#00d4ff] font-semibold transition-colors"
             >
               Sign in
             </Link>

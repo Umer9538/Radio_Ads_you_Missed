@@ -40,11 +40,11 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+    <div className="min-h-screen relative overflow-hidden bg-[#0a0f1e] flex items-center justify-center">
       {/* Animated background */}
       <FloatingParticles count={40} />
-      <MorphingBlob className="top-0 left-0" color="from-blue-500 to-cyan-500" size={500} />
-      <MorphingBlob className="bottom-0 right-0" color="from-purple-500 to-pink-500" size={600} />
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[150px]" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#00ff88]/10 rounded-full blur-[150px]" />
 
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Logo/Title */}
@@ -67,10 +67,11 @@ export default function SignInPage() {
           >
             📻
           </motion.div>
-          <HolographicText as="h1" className="text-4xl mb-2">
-            Welcome Back
-          </HolographicText>
-          <p className="text-gray-300">
+          <h1 className="text-4xl font-bold mb-2">
+            <span className="text-white">Welcome </span>
+            <span className="bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">Back</span>
+          </h1>
+          <p className="text-[#94a3b8]">
             Sign in to continue to Radio Ads You Missed
           </p>
         </motion.div>
@@ -96,36 +97,36 @@ export default function SignInPage() {
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiMail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="your@email.com"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
                   />
                 </div>
               </div>
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[#94a3b8] mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#64748b]" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="Enter your password"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
                   />
                 </div>
               </div>
@@ -135,13 +136,13 @@ export default function SignInPage() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-2 border-white/20 bg-white/10"
+                    className="w-4 h-4 rounded border-2 border-[#2a2f3e] bg-[#0a0f1e]"
                   />
-                  <span className="text-gray-300">Remember me</span>
+                  <span className="text-[#94a3b8]">Remember me</span>
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
+                  className="text-[#00d4ff] hover:text-[#00ff88] transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -184,7 +185,7 @@ export default function SignInPage() {
             {/* Social Login */}
             <button
               type="button"
-              className="w-full px-6 py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white hover:border-[#00d4ff] transition-all flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -216,11 +217,11 @@ export default function SignInPage() {
           transition={{ delay: 0.4 }}
           className="text-center mt-6"
         >
-          <p className="text-gray-300">
+          <p className="text-[#94a3b8]">
             Don't have an account?{' '}
             <Link
               href="/auth/signup"
-              className="text-purple-400 hover:text-purple-300 font-semibold transition-colors"
+              className="text-[#00d4ff] hover:text-[#00ff88] font-semibold transition-colors"
             >
               Sign up
             </Link>
@@ -235,13 +236,13 @@ export default function SignInPage() {
           className="mt-6"
         >
           <GlassmorphicCard className="p-4">
-            <p className="text-xs text-gray-400 text-center mb-2">Demo Credentials:</p>
-            <div className="space-y-1 text-xs text-gray-300">
+            <p className="text-xs text-[#64748b] text-center mb-2">Demo Credentials:</p>
+            <div className="space-y-1 text-xs text-[#94a3b8]">
               <p className="text-center">
-                <span className="text-purple-400">Admin:</span> admin@radioadsmissed.co.nz / admin123
+                <span className="text-[#00d4ff]">Admin:</span> admin@radioadsmissed.co.nz / admin123
               </p>
               <p className="text-center">
-                <span className="text-purple-400">User:</span> demo@radioadsmissed.co.nz / demo123
+                <span className="text-[#00ff88]">User:</span> demo@radioadsmissed.co.nz / demo123
               </p>
             </div>
           </GlassmorphicCard>
