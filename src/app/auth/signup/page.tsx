@@ -40,18 +40,39 @@ export default function SignUpPage() {
       return
     }
 
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long')
+      return
+    }
+
     setLoading(true)
 
     try {
-      // For now, just show success message since auth isn't fully configured
-      // In production, this would call the NextAuth signup API
-      console.log('Sign up attempt:', formData)
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }),
+      })
 
-      // Placeholder: redirect to signin after "successful" signup
-      setTimeout(() => {
-        router.push('/auth/signin?message=Account created successfully')
-      }, 1000)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create account')
+        return
+      }
+
+      // Redirect to signin with success message
+      router.push('/auth/signin?message=Account created successfully')
     } catch (err) {
+      console.error('Sign up error:', err)
       setError('Failed to create account. Please try again.')
     } finally {
       setLoading(false)

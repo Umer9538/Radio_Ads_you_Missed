@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi'
@@ -17,6 +17,18 @@ export default function SignInPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+
+  // Check for success message from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const message = params.get('message')
+    if (message) {
+      setSuccessMessage(message)
+      // Clear the message from URL
+      window.history.replaceState({}, '', '/auth/signin')
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,15 +36,24 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      // For now, just show success message since auth isn't fully configured
-      // In production, this would call the NextAuth signin function
-      console.log('Sign in attempt:', { email, password })
+      const { signIn } = await import('next-auth/react')
 
-      // Placeholder: redirect to home after "successful" login
-      setTimeout(() => {
-        router.push('/')
-      }, 1000)
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError('Invalid email or password')
+      } else if (result?.ok) {
+        // Redirect to home or callback URL
+        const callbackUrl = new URLSearchParams(window.location.search).get('callbackUrl') || '/'
+        router.push(callbackUrl)
+        router.refresh()
+      }
     } catch (err) {
+      console.error('Sign in error:', err)
       setError('Failed to sign in. Please try again.')
     } finally {
       setLoading(false)
@@ -84,6 +105,17 @@ export default function SignInPage() {
         >
           <GlassmorphicCard className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Success Message */}
+              {successMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] text-sm"
+                >
+                  {successMessage}
+                </motion.div>
+              )}
+
               {/* Error Message */}
               {error && (
                 <motion.div
