@@ -150,8 +150,9 @@ export default function AdDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <FloatingParticles count={50} />
+      <div className="min-h-screen relative overflow-hidden bg-[#0a0f1e] flex items-center justify-center">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/15 rounded-full blur-[120px]" />
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -165,7 +166,9 @@ export default function AdDetailPage() {
 
   if (!ad) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen relative overflow-hidden bg-[#0a0f1e] flex items-center justify-center">
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/15 rounded-full blur-[120px]" />
         <GlassmorphicCard className="p-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ad Not Found</h2>
           <p className="text-gray-400 mb-6">The ad you're looking for doesn't exist.</p>
@@ -178,11 +181,10 @@ export default function AdDetailPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated background */}
-      <FloatingParticles count={50} />
-      <MorphingBlob className="top-0 left-0" color="from-blue-500 to-cyan-500" />
-      <MorphingBlob className="bottom-0 right-0" color="from-purple-500 to-pink-500" size={500} />
+    <div className="min-h-screen relative overflow-hidden bg-[#0a0f1e]">
+      {/* Simplified background - only 2 glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/15 rounded-full blur-[120px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
@@ -230,7 +232,7 @@ export default function AdDetailPage() {
                 >
                   <GlassmorphicCard className="h-full overflow-hidden">
                     {/* Thumbnail */}
-                    <div className="relative h-80 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 animate-gradient-xy">
+                    <div className="relative h-80 bg-gradient-to-br from-[#00d4ff] via-[#ff1b6b] to-[#ff6b00] animate-gradient-xy">
                       {ad.thumbnailUrl ? (
                         <img
                           src={ad.thumbnailUrl}
@@ -275,7 +277,7 @@ export default function AdDetailPage() {
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute top-4 left-4 px-4 py-2 bg-green-500 rounded-full text-white font-bold shadow-lg flex items-center gap-2"
+                          className="absolute top-4 left-4 px-4 py-2 bg-[#00ff88] rounded-full text-[#0a0f1e] font-bold shadow-lg flex items-center gap-2"
                         >
                           <FiGift />
                           <span>{ad.offers.length} {ad.offers.length === 1 ? 'Offer' : 'Offers'}</span>
@@ -431,12 +433,12 @@ export default function AdDetailPage() {
                         {/* Offer Badge */}
                         <div className="flex items-center justify-between mb-4">
                           <motion.div
-                            className="px-3 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold"
+                            className="px-3 py-1 rounded-full bg-gradient-to-r from-[#00ff88] to-[#00d4ff] text-[#0a0f1e] text-sm font-bold"
                             animate={{
                               boxShadow: [
-                                '0 0 20px rgba(34, 197, 94, 0.3)',
-                                '0 0 40px rgba(34, 197, 94, 0.6)',
-                                '0 0 20px rgba(34, 197, 94, 0.3)',
+                                '0 0 20px rgba(0, 255, 136, 0.3)',
+                                '0 0 40px rgba(0, 255, 136, 0.6)',
+                                '0 0 20px rgba(0, 255, 136, 0.3)',
                               ]
                             }}
                             transition={{ duration: 2, repeat: Infinity }}
@@ -452,7 +454,7 @@ export default function AdDetailPage() {
                           )}
                         </div>
 
-                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 transition-all">
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#00ff88] group-hover:to-[#00d4ff] transition-all">
                           {offer.title}
                         </h3>
 
@@ -461,13 +463,13 @@ export default function AdDetailPage() {
                         {/* Pricing */}
                         {offer.discountAmount && (
                           <div className="mb-4">
-                            <span className="text-2xl font-bold text-green-400">
+                            <span className="text-2xl font-bold text-[#00ff88]">
                               {offer.discountAmount}% OFF
                             </span>
                             {offer.originalPrice && (
                               <div className="text-sm text-gray-400">
                                 <span className="line-through">${offer.originalPrice}</span>
-                                <span className="ml-2 text-green-400 font-bold">
+                                <span className="ml-2 text-[#00ff88] font-bold">
                                   ${(offer.originalPrice * (1 - offer.discountAmount / 100)).toFixed(2)}
                                 </span>
                               </div>
@@ -479,7 +481,7 @@ export default function AdDetailPage() {
                         {offer.code && (
                           <div className="mb-4 p-3 rounded-lg bg-white/5 border border-white/10">
                             <span className="text-xs text-gray-400">Promo Code:</span>
-                            <div className="text-lg font-mono font-bold text-purple-400">
+                            <div className="text-lg font-mono font-bold text-[#00d4ff]">
                               {offer.code}
                             </div>
                           </div>
@@ -528,7 +530,7 @@ export default function AdDetailPage() {
                     <Link href={`/ads/${relatedAd.id}`}>
                       <GlassmorphicCard className="group cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300">
                         {/* Thumbnail */}
-                        <div className="relative h-32 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 animate-gradient-xy">
+                        <div className="relative h-32 bg-gradient-to-br from-[#00d4ff] via-[#ff1b6b] to-[#ff6b00] animate-gradient-xy">
                           {relatedAd.thumbnailUrl ? (
                             <img
                               src={relatedAd.thumbnailUrl}
@@ -544,7 +546,7 @@ export default function AdDetailPage() {
 
                         {/* Content */}
                         <div className="p-4">
-                          <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 transition-all">
+                          <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#ff1b6b] group-hover:to-[#00d4ff] transition-all">
                             {relatedAd.title}
                           </h3>
                           <p className="text-sm text-gray-400">{relatedAd.brand}</p>

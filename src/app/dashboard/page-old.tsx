@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, memo } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   FiHeart, FiClock, FiSearch, FiGift, FiUser, FiRadio,
@@ -16,28 +16,6 @@ interface DashboardStats {
   searchCount: number
 }
 
-// Memoized stat card component
-const StatCard = memo(({ stat, index }: { stat: any; index: number }) => (
-  <Link href={stat.link}>
-    <div className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] hover:border-[#00d4ff]/50 transition-all cursor-pointer group">
-      <div className="flex items-center justify-between mb-4">
-        <div
-          className="p-3 rounded-xl transition-transform group-hover:scale-110"
-          style={{ backgroundColor: `${stat.color}20` }}
-        >
-          <stat.icon className="text-2xl" style={{ color: stat.color }} />
-        </div>
-      </div>
-
-      <div className="text-4xl font-bold text-white mb-2">
-        {stat.value}
-      </div>
-      <div className="text-[#94a3b8]">{stat.label}</div>
-    </div>
-  </Link>
-))
-StatCard.displayName = 'StatCard'
-
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     favoritesCount: 0,
@@ -46,6 +24,7 @@ export default function DashboardPage() {
     searchCount: 0
   })
   const [recentAds, setRecentAds] = useState<any[]>([])
+  const [favorites, setFavorites] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -112,12 +91,144 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
-      {/* Background gradient */}
+      {/* Background gradient - matches hero section */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
 
-      {/* Simplified atmospheric glows - only 2 */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/20 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+      {/* Large atmospheric glows - matching hero section with prominent red/pink */}
+      <div className="absolute top-0 right-1/4 w-[900px] h-[900px] bg-[#ff1b6b]/40 rounded-full blur-[200px]" />
+      <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-[#ff4d8f]/35 rounded-full blur-[180px]" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/15 rounded-full blur-[150px]" />
+      <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
+
+      {/* Radio Tower Silhouette - Subtle like hero section */}
+      <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-25">
+        <svg
+          width="800"
+          height="900"
+          viewBox="0 0 800 900"
+          fill="none"
+          className="absolute bottom-0 right-0 md:right-20"
+          style={{ filter: 'drop-shadow(0 0 80px rgba(255, 27, 107, 0.8)) drop-shadow(0 0 120px rgba(255, 77, 143, 0.6))' }}
+        >
+          {/* Strong red glow around tower top */}
+          <circle cx="400" cy="100" r="130" fill="#ff1b6b" opacity="0.15">
+            <animate attributeName="opacity" values="0.15;0.25;0.15" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="400" cy="140" r="180" fill="#ff4d8f" opacity="0.1">
+            <animate attributeName="opacity" values="0.1;0.2;0.1" dur="4s" repeatCount="indefinite" />
+          </circle>
+          {/* Main Tower Structure - Larger lattice design */}
+          <g opacity="0.8">
+            {/* Left side of tower */}
+            <line x1="320" y1="100" x2="360" y2="850" stroke="url(#towerGradient2)" strokeWidth="6" />
+            <line x1="480" y1="100" x2="440" y2="850" stroke="url(#towerGradient2)" strokeWidth="6" />
+
+            {/* Horizontal beams - creating lattice structure */}
+            {[150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800].map((y, i) => {
+              const leftX = 320 + (40 / 750) * (y - 100)
+              const rightX = 480 - (40 / 750) * (y - 100)
+              const beamWidth = rightX - leftX
+              return (
+                <g key={i}>
+                  <line
+                    x1={leftX}
+                    y1={y}
+                    x2={rightX}
+                    y2={y}
+                    stroke="url(#towerGradient2)"
+                    strokeWidth="3"
+                    opacity="0.6"
+                  />
+                  {/* Diagonal cross beams */}
+                  {i % 2 === 0 && (
+                    <>
+                      <line
+                        x1={leftX}
+                        y1={y}
+                        x2={rightX}
+                        y2={y + 50}
+                        stroke="url(#towerGradient2)"
+                        strokeWidth="2"
+                        opacity="0.4"
+                      />
+                      <line
+                        x1={rightX}
+                        y1={y}
+                        x2={leftX}
+                        y2={y + 50}
+                        stroke="url(#towerGradient2)"
+                        strokeWidth="2"
+                        opacity="0.4"
+                      />
+                    </>
+                  )}
+                </g>
+              )
+            })}
+          </g>
+
+          {/* Antenna Mast on top */}
+          <line x1="400" y1="20" x2="400" y2="100" stroke="url(#towerGradient2)" strokeWidth="4" opacity="0.9" />
+
+          {/* Red blinking light at top */}
+          <circle cx="400" cy="20" r="8" fill="#ff1b6b" opacity="0.9">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="400" cy="20" r="16" fill="#ff1b6b" opacity="0.4">
+            <animate attributeName="opacity" values="0.4;0;0.4" dur="1.5s" repeatCount="indefinite" />
+            <animate attributeName="r" values="16;24;16" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+
+          {/* Signal waves emanating from top */}
+          <g opacity="0.6">
+            {[0, 1, 2].map((i) => (
+              <circle
+                key={i}
+                cx="400"
+                cy="60"
+                r="30"
+                stroke="#00d4ff"
+                strokeWidth="2"
+                fill="none"
+                opacity="0.4"
+              >
+                <animate
+                  attributeName="r"
+                  values="30;80;120"
+                  dur="4s"
+                  begin={`${i * 1.3}s`}
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="opacity"
+                  values="0.6;0.3;0"
+                  dur="4s"
+                  begin={`${i * 1.3}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            ))}
+          </g>
+
+          {/* Platform at various heights */}
+          <rect x="350" y="400" width="100" height="4" fill="url(#towerGradient2)" opacity="0.7" />
+          <rect x="355" y="650" width="90" height="4" fill="url(#towerGradient2)" opacity="0.7" />
+
+          <defs>
+            <linearGradient id="towerGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.9" />
+              <stop offset="30%" stopColor="#ff4d8f" stopOpacity="0.75" />
+              <stop offset="60%" stopColor="#ff6b00" stopOpacity="0.6" />
+              <stop offset="80%" stopColor="#00d4ff" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#00ff88" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Foreground atmospheric effects */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#00ff88]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
@@ -157,7 +268,28 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <StatCard stat={stat} index={index} />
+              <Link href={stat.link}>
+                <div className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] hover:border-[#00d4ff]/50 transition-all cursor-pointer group">
+                  <div className="flex items-center justify-between mb-4">
+                    <div
+                      className="p-3 rounded-xl transition-transform group-hover:scale-110"
+                      style={{ backgroundColor: `${stat.color}20` }}
+                    >
+                      <stat.icon className="text-2xl" style={{ color: stat.color }} />
+                    </div>
+                  </div>
+
+                  <motion.div
+                    className="text-4xl font-bold text-white mb-2"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 200 }}
+                  >
+                    {stat.value}
+                  </motion.div>
+                  <div className="text-[#94a3b8]">{stat.label}</div>
+                </div>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -232,8 +364,11 @@ export default function DashboardPage() {
           {loading ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
-                <div
+                <motion.div
                   key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
                   className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] h-32 animate-pulse"
                 />
               ))}
