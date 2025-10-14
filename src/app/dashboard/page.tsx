@@ -3,15 +3,11 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  FiHeart, FiClock, FiSearch, FiBell, FiTrendingUp,
-  FiGift, FiPlay, FiUser
+  FiHeart, FiClock, FiSearch, FiGift, FiUser, FiRadio,
+  FiGrid, FiArrowRight
 } from 'react-icons/fi'
 import Link from 'next/link'
-import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
-import FloatingParticles from '@/components/effects/FloatingParticles'
-import MorphingBlob from '@/components/ui/MorphingBlob'
-import HolographicText from '@/components/ui/HolographicText'
-import MagneticButton from '@/components/ui/MagneticButton'
+import AdCardNew from '@/components/ads/AdCardNew'
 
 interface DashboardStats {
   favoritesCount: number
@@ -67,66 +63,60 @@ export default function DashboardPage() {
       icon: FiHeart,
       label: 'Favorites',
       value: stats.favoritesCount,
-      color: 'from-red-500 to-pink-500',
+      color: '#ff1b6b',
       link: '/dashboard/favorites'
     },
     {
       icon: FiClock,
       label: 'Play History',
       value: stats.playHistoryCount,
-      color: 'from-blue-500 to-cyan-500',
+      color: '#00d4ff',
       link: '/dashboard/history'
     },
     {
       icon: FiGift,
       label: 'Claimed Offers',
       value: stats.claimedOffersCount,
-      color: 'from-green-500 to-emerald-500',
+      color: '#00ff88',
       link: '/dashboard/offers'
     },
     {
       icon: FiSearch,
       label: 'Searches',
       value: stats.searchCount,
-      color: 'from-purple-500 to-indigo-500',
+      color: '#8b5cf6',
       link: '/dashboard/searches'
     }
   ]
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated background */}
-      <FloatingParticles count={50} />
-      <MorphingBlob className="top-0 right-0" color="from-blue-500 to-cyan-500" size={600} />
-      <MorphingBlob className="bottom-0 left-0" color="from-purple-500 to-pink-500" size={500} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#0a0f1e] pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-10"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <HolographicText as="h1" className="text-5xl mb-2">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
                 Your Dashboard
-              </HolographicText>
-              <p className="text-xl text-gray-300">
+              </h1>
+              <p className="text-lg text-[#94a3b8]">
                 Welcome back! Here's your activity overview
               </p>
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/profile">
-                <div className="p-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                  <FiUser className="text-2xl" />
-                </div>
-              </Link>
-            </motion.div>
+            <Link href="/profile">
+              <motion.button
+                className="p-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <FiUser className="text-2xl" />
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
 
@@ -135,21 +125,19 @@ export default function DashboardPage() {
           {statCards.map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
               <Link href={stat.link}>
-                <GlassmorphicCard className="p-6 cursor-pointer hover:scale-105 transition-transform duration-300">
+                <div className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] hover:border-[#00d4ff]/50 transition-all cursor-pointer group">
                   <div className="flex items-center justify-between mb-4">
-                    <motion.div
-                      className={`p-3 rounded-full bg-gradient-to-br ${stat.color}`}
-                      whileHover={{ scale: 1.1, rotate: 360 }}
-                      transition={{ duration: 0.6 }}
+                    <div
+                      className="p-3 rounded-xl transition-transform group-hover:scale-110"
+                      style={{ backgroundColor: `${stat.color}20` }}
                     >
-                      <stat.icon className="text-2xl text-white" />
-                    </motion.div>
-                    <FiTrendingUp className="text-green-400 text-xl" />
+                      <stat.icon className="text-2xl" style={{ color: stat.color }} />
+                    </div>
                   </div>
 
                   <motion.div
@@ -160,8 +148,8 @@ export default function DashboardPage() {
                   >
                     {stat.value}
                   </motion.div>
-                  <div className="text-gray-300">{stat.label}</div>
-                </GlassmorphicCard>
+                  <div className="text-[#94a3b8]">{stat.label}</div>
+                </div>
               </Link>
             </motion.div>
           ))}
@@ -169,19 +157,19 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="mb-12"
         >
-          <GlassmorphicCard className="p-8">
+          <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
             <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link href="/search">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-2"
+                  className="w-full p-4 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold transition-all flex items-center justify-center gap-2"
                 >
                   <FiSearch />
                   Search Ads
@@ -192,9 +180,9 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2"
+                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all flex items-center justify-center gap-2"
                 >
-                  <FiGift />
+                  <FiGrid />
                   Browse Categories
                 </motion.button>
               </Link>
@@ -203,111 +191,59 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold hover:shadow-lg hover:shadow-green-500/50 transition-all flex items-center justify-center gap-2"
+                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all flex items-center justify-center gap-2"
                 >
-                  <FiBell />
+                  <FiRadio />
                   View Stations
                 </motion.button>
               </Link>
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
 
         {/* Recent Activity */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <HolographicText as="h2" className="text-3xl">
+            <h2 className="text-3xl font-bold text-white">
               Recently Played
-            </HolographicText>
+            </h2>
             <Link href="/dashboard/history">
               <motion.button
-                whileHover={{ x: 5 }}
-                className="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                className="text-[#00d4ff] hover:text-[#00ff88] font-semibold flex items-center gap-2 transition-colors"
               >
                 View All
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  →
-                </motion.span>
+                <FiArrowRight />
               </motion.button>
             </Link>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
+            <div className="space-y-4">
+              {[...Array(4)].map((_, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                >
-                  <GlassmorphicCard className="h-64 animate-pulse" />
-                </motion.div>
+                  className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] h-32 animate-pulse"
+                />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentAds.map((ad, index) => (
+            <div className="space-y-4">
+              {recentAds.slice(0, 4).map((ad, index) => (
                 <motion.div
                   key={ad.id}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                  <Link href={`/ads/${ad.id}`}>
-                    <GlassmorphicCard className="group cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300">
-                      {/* Thumbnail */}
-                      <div className="relative h-40 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 animate-gradient-xy">
-                        {ad.thumbnailUrl ? (
-                          <img
-                            src={ad.thumbnailUrl}
-                            alt={ad.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <motion.div
-                              className="text-white text-5xl"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                            >
-                              📻
-                            </motion.div>
-                          </div>
-                        )}
-
-                        {/* Play Overlay */}
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <FiPlay className="text-white text-4xl" />
-                        </div>
-
-                        {ad.offers && ad.offers.length > 0 && (
-                          <div className="absolute top-2 right-2 px-2 py-1 bg-green-500 rounded-full text-white text-xs font-bold">
-                            OFFER
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-4">
-                        <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 transition-all">
-                          {ad.title}
-                        </h3>
-                        <p className="text-sm text-gray-400">{ad.brand}</p>
-                        <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
-                          <span>{ad.station.name}</span>
-                          <span>{ad.playCount} plays</span>
-                        </div>
-                      </div>
-                    </GlassmorphicCard>
-                  </Link>
+                  <AdCardNew ad={ad} />
                 </motion.div>
               ))}
             </div>
@@ -316,26 +252,33 @@ export default function DashboardPage() {
 
         {/* CTA Section */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-20"
+          transition={{ duration: 0.5 }}
+          className="mt-12"
         >
-          <GlassmorphicCard className="p-12 text-center">
-            <HolographicText as="h2" className="text-4xl mb-4">
-              Discover More Offers
-            </HolographicText>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <div className="bg-[#1a1f2e] rounded-2xl p-12 border border-[#2a2f3e] text-center">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Discover More{' '}
+              <span className="bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+                Offers
+              </span>
+            </h2>
+            <p className="text-lg text-[#94a3b8] mb-8 max-w-2xl mx-auto">
               Browse through thousands of radio ads and never miss a great deal
             </p>
             <Link href="/search">
-              <MagneticButton className="px-12 py-6">
-                <FiSearch className="mr-2 text-2xl" />
-                <span className="text-xl">Explore All Ads</span>
-              </MagneticButton>
+              <motion.button
+                className="px-10 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-lg inline-flex items-center gap-3"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiSearch className="text-xl" />
+                Explore All Ads
+              </motion.button>
             </Link>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
       </div>
     </div>
