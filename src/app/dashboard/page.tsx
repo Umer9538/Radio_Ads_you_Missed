@@ -90,8 +90,63 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0a0f1e] pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
+
+      {/* Radio Tower Silhouette */}
+      <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-30">
+        <svg
+          width="400"
+          height="600"
+          viewBox="0 0 400 600"
+          fill="none"
+          className="absolute bottom-0"
+        >
+          {/* Tower Structure */}
+          <path
+            d="M200 50 L220 550 L180 550 Z"
+            fill="url(#towerGradient)"
+            opacity="0.6"
+          />
+          {/* Cross beams */}
+          <line x1="190" y1="150" x2="210" y2="150" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
+          <line x1="188" y1="250" x2="212" y2="250" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
+          <line x1="186" y1="350" x2="214" y2="350" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
+          <line x1="184" y1="450" x2="216" y2="450" stroke="url(#towerGradient)" strokeWidth="2" opacity="0.4" />
+
+          {/* Antenna on top */}
+          <line x1="200" y1="10" x2="200" y2="50" stroke="url(#towerGradient)" strokeWidth="3" opacity="0.6" />
+          <circle cx="200" cy="10" r="4" fill="#ff1b6b" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+          </circle>
+
+          {/* Signal waves */}
+          <circle cx="200" cy="30" r="15" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.3">
+            <animate attributeName="r" values="15;30;45" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0.2;0" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="200" cy="30" r="15" stroke="#00ff88" strokeWidth="1" fill="none" opacity="0.3">
+            <animate attributeName="r" values="15;30;45" dur="3s" begin="1s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0.2;0" dur="3s" begin="1s" repeatCount="indefinite" />
+          </circle>
+
+          <defs>
+            <linearGradient id="towerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#00d4ff" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#00ff88" stopOpacity="0.2" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Animated background elements */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute top-40 right-10 w-96 h-96 bg-[#ff1b6b]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#00ff88]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
