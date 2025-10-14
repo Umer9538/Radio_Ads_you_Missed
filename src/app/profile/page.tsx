@@ -7,6 +7,8 @@ import {
   FiEdit2, FiSave, FiCamera, FiShield, FiSettings,
   FiHeart, FiSearch, FiGift
 } from 'react-icons/fi'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import SignOutButton from '@/components/auth/SignOutButton'
 
 interface UserProfile {
@@ -27,15 +29,19 @@ interface ActivityItem {
 }
 
 export default function ProfilePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'preferences' | 'activity'>('profile')
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   const [profile, setProfile] = useState<UserProfile>({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'user@radioadsmissed.co.nz',
+    firstName: '',
+    lastName: '',
+    email: '',
     role: 'USER',
     createdAt: new Date().toISOString(),
   })
@@ -58,47 +64,56 @@ export default function ProfilePage() {
     marketingEmails: false
   })
 
-  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([
-    {
-      id: '1',
-      type: 'play',
-      description: 'Played "McDonald\'s Summer Deal"',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: '2',
-      type: 'favorite',
-      description: 'Added "Warehouse Sale" to favorites',
-      timestamp: '5 hours ago'
-    },
-    {
-      id: '3',
-      type: 'claim',
-      description: 'Claimed offer from "Pizza Hut"',
-      timestamp: '1 day ago'
-    },
-    {
-      id: '4',
-      type: 'search',
-      description: 'Searched for "automotive deals"',
-      timestamp: '2 days ago'
-    }
-  ])
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
 
+  // Redirect if not authenticated
   useEffect(() => {
-    // Simulate loading user data
-    setTimeout(() => {
-      setFormData({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      })
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/profile')
+    }
+  }, [status, router])
+
+  // Fetch user profile data
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchProfile()
+    }
+  }, [status])
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/user/profile')
+      const data = await response.json()
+
+      if (data.success) {
+        setProfile({
+          firstName: data.data.firstName || '',
+          lastName: data.data.lastName || '',
+          email: data.data.email,
+          image: data.data.image,
+          role: data.data.role,
+          createdAt: data.data.createdAt,
+        })
+
+        setFormData({
+          firstName: data.data.firstName || '',
+          lastName: data.data.lastName || '',
+          email: data.data.email,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      } else {
+        setError('Failed to load profile')
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+      setError('Failed to load profile')
+    } finally {
       setLoading(false)
-    }, 500)
-  }, [profile])
+    }
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -115,37 +130,103 @@ export default function ProfilePage() {
   }
 
   const handleSaveProfile = async () => {
-    setSaving(true)
-    // Simulate API call
-    setTimeout(() => {
-      setProfile({
-        ...profile,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email
+    try {
+      setSaving(true)
+      setError('')
+      setSuccessMessage('')
+
+      const response = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+        }),
       })
-      setIsEditing(false)
+
+      const data = await response.json()
+
+      if (data.success) {
+        setProfile({
+          ...profile,
+          firstName: data.data.firstName,
+          lastName: data.data.lastName,
+          email: data.data.email,
+        })
+        setSuccessMessage('Profile updated successfully!')
+        setIsEditing(false)
+
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000)
+      } else {
+        setError(data.error || 'Failed to update profile')
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error)
+      setError('Failed to update profile')
+    } finally {
       setSaving(false)
-    }, 1000)
+    }
   }
 
   const handleChangePassword = async () => {
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert('Passwords do not match')
-      return
-    }
-    setSaving(true)
-    // Simulate API call
-    setTimeout(() => {
-      setFormData({
-        ...formData,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+    try {
+      setError('')
+      setSuccessMessage('')
+
+      if (formData.newPassword !== formData.confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
+
+      if (!formData.currentPassword) {
+        setError('Please enter your current password')
+        return
+      }
+
+      if (formData.newPassword.length < 6) {
+        setError('New password must be at least 6 characters long')
+        return
+      }
+
+      setSaving(true)
+
+      const response = await fetch('/api/user/password', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        }),
       })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setFormData({
+          ...formData,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+        setSuccessMessage('Password changed successfully!')
+
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000)
+      } else {
+        setError(data.error || 'Failed to change password')
+      }
+    } catch (error) {
+      console.error('Error changing password:', error)
+      setError('Failed to change password')
+    } finally {
       setSaving(false)
-      alert('Password changed successfully')
-    }, 1000)
+    }
   }
 
   const tabs = [
@@ -154,6 +235,21 @@ export default function ProfilePage() {
     { id: 'preferences', label: 'Preferences', icon: FiSettings },
     { id: 'activity', label: 'Activity', icon: FiActivity }
   ]
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1e] pt-20 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          className="text-6xl"
+        >
+          📻
+        </motion.div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0f1e] pt-20">
@@ -190,7 +286,9 @@ export default function ProfilePage() {
                   {profile.image ? (
                     <img src={profile.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
                   ) : (
-                    `${profile.firstName[0]}${profile.lastName[0]}`
+                    profile.firstName && profile.lastName
+                      ? `${profile.firstName[0]}${profile.lastName[0]}`
+                      : profile.email[0].toUpperCase()
                   )}
                 </motion.div>
                 <motion.button
@@ -205,7 +303,9 @@ export default function ProfilePage() {
               {/* User Info */}
               <div className="flex-1">
                 <h2 className="text-3xl font-bold text-white mb-2">
-                  {profile.firstName} {profile.lastName}
+                  {profile.firstName && profile.lastName
+                    ? `${profile.firstName} ${profile.lastName}`
+                    : profile.email}
                 </h2>
                 <p className="text-[#94a3b8] mb-2">{profile.email}</p>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-[#64748b]">
@@ -282,6 +382,28 @@ export default function ProfilePage() {
                   </motion.button>
                 ) : null}
               </div>
+
+              {/* Success Message */}
+              {successMessage && activeTab === 'profile' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] text-sm"
+                >
+                  {successMessage}
+                </motion.div>
+              )}
+
+              {/* Error Message */}
+              {error && activeTab === 'profile' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -368,6 +490,28 @@ export default function ProfilePage() {
           {activeTab === 'security' && (
             <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Security Settings</h3>
+
+              {/* Success Message */}
+              {successMessage && activeTab === 'security' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] text-sm"
+                >
+                  {successMessage}
+                </motion.div>
+              )}
+
+              {/* Error Message */}
+              {error && activeTab === 'security' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
 
               <div className="space-y-6">
                 <div>
@@ -501,8 +645,17 @@ export default function ProfilePage() {
             <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Recent Activity</h3>
 
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
+              {recentActivity.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📊</div>
+                  <h4 className="text-xl font-bold text-white mb-2">No Recent Activity</h4>
+                  <p className="text-[#94a3b8]">
+                    Your activity will appear here once you start using the platform
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentActivity.map((activity, index) => (
                   <motion.div
                     key={activity.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -526,8 +679,9 @@ export default function ProfilePage() {
                       <p className="text-sm text-[#64748b]">{activity.timestamp}</p>
                     </div>
                   </motion.div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </motion.div>
