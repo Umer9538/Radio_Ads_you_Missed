@@ -6,64 +6,76 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  FiHome, FiSearch, FiRadio, FiGrid, FiHeart,
-  FiUser, FiMenu, FiX, FiLogIn
+  FiSearch, FiTrendingUp, FiRadio, FiUsers,
+  FiMenu, FiX
 } from 'react-icons/fi'
-import SignOutButton from '@/components/auth/SignOutButton'
 
 export default function Navbar() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { href: '/', label: 'Home', icon: FiHome },
-    { href: '/search', label: 'Search', icon: FiSearch },
-    { href: '/stations', label: 'Stations', icon: FiRadio },
-    { href: '/categories', label: 'Categories', icon: FiGrid },
-  ]
-
-  const userLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: FiHeart },
-    { href: '/profile', label: 'Profile', icon: FiUser },
+    { href: '/search', label: 'Find Ads', icon: FiSearch },
+    { href: '/for-advertisers', label: 'For Advertisers', icon: FiTrendingUp },
+    { href: '/for-stations', label: 'For Stations', icon: FiRadio },
+    { href: '/for-agencies', label: 'For Agencies', icon: FiUsers },
   ]
 
   const isActive = (path: string) => pathname === path
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0f1e]/95 backdrop-blur-xl border-b border-[#1a1f2e]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <motion.div
-              className="text-3xl"
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            >
-              📻
-            </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Radio Ads
-            </span>
+            {/* Radio Icon */}
+            <div className="relative">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#gradient)" />
+                <path d="M12 16h8M16 12v8" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="20" cy="12" r="1" fill="white" />
+                <circle cx="12" cy="20" r="1" fill="white" />
+                <defs>
+                  <linearGradient id="gradient" x1="4" y1="4" x2="28" y2="28">
+                    <stop stopColor="#00d4ff" />
+                    <stop offset="1" stopColor="#00ff88" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              {/* Waveform lines */}
+              <div className="absolute -right-1 top-1/2 -translate-y-1/2 flex gap-0.5">
+                <div className="w-0.5 h-2 bg-[#00d4ff] rounded-full animate-pulse"></div>
+                <div className="w-0.5 h-3 bg-[#00d4ff] rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-0.5 h-1.5 bg-[#00d4ff] rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+            </div>
+            {/* Logo Text */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-white">Radio Ads</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+                You Missed
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => {
               const Icon = link.icon
               return (
                 <Link key={link.href} href={link.href}>
                   <motion.div
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
                       isActive(link.href)
-                        ? 'bg-purple-600 text-white'
-                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        ? 'text-white'
+                        : 'text-[#94a3b8] hover:text-white'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Icon />
+                    {link.href === '/search' && <Icon className="text-[#00d4ff]" />}
                     <span>{link.label}</span>
                   </motion.div>
                 </Link>
@@ -71,44 +83,39 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* User Menu */}
-          <div className="hidden md:flex items-center gap-2">
-            {status === 'loading' ? (
-              <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
-            ) : session ? (
-              <>
-                {userLinks.map((link) => {
-                  const Icon = link.icon
-                  return (
-                    <Link key={link.href} href={link.href}>
-                      <motion.div
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                          isActive(link.href)
-                            ? 'bg-purple-600 text-white'
-                            : 'text-gray-300 hover:text-white hover:bg-white/5'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Icon />
-                        <span className="hidden lg:inline">{link.label}</span>
-                      </motion.div>
-                    </Link>
-                  )
-                })}
-                <SignOutButton variant="icon" />
-              </>
-            ) : (
-              <Link href="/auth/signin">
-                <motion.div
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-all"
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center gap-3">
+            {session ? (
+              <Link href="/dashboard">
+                <motion.button
+                  className="px-6 py-2 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm hover:bg-[#00d4ff]/10 transition-all"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <FiLogIn />
-                  <span>Sign In</span>
-                </motion.div>
+                  Dashboard
+                </motion.button>
               </Link>
+            ) : (
+              <>
+                <Link href="/auth/signin">
+                  <motion.button
+                    className="px-6 py-2 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm hover:bg-[#00d4ff]/10 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Sign In
+                  </motion.button>
+                </Link>
+                <Link href="/auth/signup">
+                  <motion.button
+                    className="px-6 py-2 rounded-full bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-[#0a0f1e] font-bold text-sm hover:opacity-90 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Get Started
+                  </motion.button>
+                </Link>
+              </>
             )}
           </div>
 
@@ -130,7 +137,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10"
+            className="md:hidden bg-[#0a0f1e] border-t border-[#1a1f2e]"
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => {
@@ -140,58 +147,48 @@ export default function Navbar() {
                     <motion.div
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         isActive(link.href)
-                          ? 'bg-purple-600 text-white'
-                          : 'text-gray-300 hover:text-white hover:bg-white/5'
+                          ? 'bg-[#1a1f2e] text-white'
+                          : 'text-[#94a3b8] hover:text-white hover:bg-[#1a1f2e]/50'
                       }`}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Icon />
+                      <Icon className={link.href === '/search' ? 'text-[#00d4ff]' : ''} />
                       <span>{link.label}</span>
                     </motion.div>
                   </Link>
                 )
               })}
 
-              {session && (
-                <>
-                  <div className="border-t border-white/10 my-2" />
-                  {userLinks.map((link) => {
-                    const Icon = link.icon
-                    return (
-                      <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}>
-                        <motion.div
-                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                            isActive(link.href)
-                              ? 'bg-purple-600 text-white'
-                              : 'text-gray-300 hover:text-white hover:bg-white/5'
-                          }`}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Icon />
-                          <span>{link.label}</span>
-                        </motion.div>
-                      </Link>
-                    )
-                  })}
-                  <div className="pt-2">
-                    <SignOutButton variant="text" className="w-full px-4 py-3" />
-                  </div>
-                </>
-              )}
+              <div className="border-t border-[#1a1f2e] my-2" />
 
-              {!session && status !== 'loading' && (
-                <>
-                  <div className="border-t border-white/10 my-2" />
+              {session ? (
+                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <motion.button
+                    className="w-full px-6 py-3 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Dashboard
+                  </motion.button>
+                </Link>
+              ) : (
+                <div className="space-y-2">
                   <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
-                    <motion.div
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg bg-purple-600 text-white"
+                    <motion.button
+                      className="w-full px-6 py-3 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm"
                       whileTap={{ scale: 0.95 }}
                     >
-                      <FiLogIn />
-                      <span>Sign In</span>
-                    </motion.div>
+                      Sign In
+                    </motion.button>
                   </Link>
-                </>
+                  <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)}>
+                    <motion.button
+                      className="w-full px-6 py-3 rounded-full bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-[#0a0f1e] font-bold text-sm"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Get Started
+                    </motion.button>
+                  </Link>
+                </div>
               )}
             </div>
           </motion.div>
