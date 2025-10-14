@@ -4,13 +4,9 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   FiUser, FiMail, FiLock, FiBell, FiActivity,
-  FiEdit2, FiSave, FiCamera, FiShield, FiSettings
+  FiEdit2, FiSave, FiCamera, FiShield, FiSettings,
+  FiHeart, FiSearch, FiGift
 } from 'react-icons/fi'
-import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
-import FloatingParticles from '@/components/effects/FloatingParticles'
-import MorphingBlob from '@/components/ui/MorphingBlob'
-import HolographicText from '@/components/ui/HolographicText'
-import MagneticButton from '@/components/ui/MagneticButton'
 import SignOutButton from '@/components/auth/SignOutButton'
 
 interface UserProfile {
@@ -160,40 +156,35 @@ export default function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated background */}
-      <FloatingParticles count={50} />
-      <MorphingBlob className="top-0 right-0" color="from-blue-500 to-cyan-500" size={600} />
-      <MorphingBlob className="bottom-0 left-0" color="from-purple-500 to-pink-500" size={500} />
-
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#0a0f1e] pt-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
+          className="mb-10 text-center"
         >
-          <HolographicText as="h1" className="text-5xl mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
             Your Profile
-          </HolographicText>
-          <p className="text-xl text-gray-300">
+          </h1>
+          <p className="text-lg text-[#94a3b8]">
             Manage your account settings and preferences
           </p>
         </motion.div>
 
         {/* Profile Header Card */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <GlassmorphicCard className="p-8">
+          <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               {/* Avatar */}
               <div className="relative">
                 <motion.div
-                  className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white text-4xl font-bold"
+                  className="w-32 h-32 rounded-full bg-gradient-to-br from-[#ff1b6b] to-[#ff6b00] flex items-center justify-center text-white text-4xl font-bold"
                   whileHover={{ scale: 1.05 }}
                 >
                   {profile.image ? (
@@ -203,7 +194,7 @@ export default function ProfilePage() {
                   )}
                 </motion.div>
                 <motion.button
-                  className="absolute bottom-0 right-0 p-2 rounded-full bg-blue-600 text-white shadow-lg"
+                  className="absolute bottom-0 right-0 p-2 rounded-full bg-[#00d4ff] text-white shadow-lg"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -216,9 +207,9 @@ export default function ProfilePage() {
                 <h2 className="text-3xl font-bold text-white mb-2">
                   {profile.firstName} {profile.lastName}
                 </h2>
-                <p className="text-gray-400 mb-2">{profile.email}</p>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                  <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 font-semibold">
+                <p className="text-[#94a3b8] mb-2">{profile.email}</p>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-[#64748b]">
+                  <span className="px-3 py-1 rounded-full bg-[#8b5cf6]/20 text-[#8b5cf6] font-semibold">
                     {profile.role}
                   </span>
                   <span>Joined {new Date(profile.createdAt).toLocaleDateString()}</span>
@@ -233,17 +224,17 @@ export default function ProfilePage() {
                 <SignOutButton className="w-full" />
               </div>
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
 
         {/* Tabs */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <GlassmorphicCard className="p-2">
+          <div className="bg-[#1a1f2e] rounded-2xl p-2 border border-[#2a2f3e]">
             <div className="flex gap-2">
               {tabs.map((tab) => {
                 const Icon = tab.icon
@@ -253,8 +244,8 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white shadow-lg'
+                        : 'text-[#94a3b8] hover:text-white hover:bg-[#0a0f1e]'
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -265,24 +256,24 @@ export default function ProfilePage() {
                 )
               })}
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
 
         {/* Tab Content */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <GlassmorphicCard className="p-8">
+            <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-white">Personal Information</h3>
                 {!isEditing ? (
                   <motion.button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-[#00d4ff] text-[#00d4ff] hover:bg-[#00d4ff]/10 transition-all font-semibold"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -295,7 +286,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                       First Name
                     </label>
                     <input
@@ -304,12 +295,12 @@ export default function ProfilePage() {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all disabled:opacity-50"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-300 mb-2">
+                    <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                       Last Name
                     </label>
                     <input
@@ -318,13 +309,13 @@ export default function ProfilePage() {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all disabled:opacity-50"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                     Email Address
                   </label>
                   <input
@@ -333,16 +324,22 @@ export default function ProfilePage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all disabled:opacity-50"
                   />
                 </div>
 
                 {isEditing && (
                   <div className="flex gap-4">
-                    <MagneticButton onClick={handleSaveProfile} disabled={saving}>
-                      <FiSave className="mr-2" />
+                    <motion.button
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                      className="px-8 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FiSave />
                       {saving ? 'Saving...' : 'Save Changes'}
-                    </MagneticButton>
+                    </motion.button>
                     <motion.button
                       onClick={() => {
                         setIsEditing(false)
@@ -355,7 +352,7 @@ export default function ProfilePage() {
                           confirmPassword: ''
                         })
                       }}
-                      className="px-8 py-4 rounded-full bg-gray-600 text-white font-bold hover:bg-gray-700 transition-all"
+                      className="px-8 py-4 rounded-full border-2 border-[#94a3b8] text-[#94a3b8] font-bold hover:bg-[#94a3b8]/10 transition-all"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -364,17 +361,17 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-            </GlassmorphicCard>
+            </div>
           )}
 
           {/* Security Tab */}
           {activeTab === 'security' && (
-            <GlassmorphicCard className="p-8">
+            <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Security Settings</h3>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                     Current Password
                   </label>
                   <input
@@ -382,13 +379,13 @@ export default function ProfilePage() {
                     name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
                     placeholder="Enter current password"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                     New Password
                   </label>
                   <input
@@ -396,13 +393,13 @@ export default function ProfilePage() {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
                     placeholder="Enter new password"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
                     Confirm New Password
                   </label>
                   <input
@@ -410,24 +407,30 @@ export default function ProfilePage() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
                     placeholder="Confirm new password"
                   />
                 </div>
 
-                <MagneticButton onClick={handleChangePassword} disabled={saving}>
-                  <FiLock className="mr-2" />
+                <motion.button
+                  onClick={handleChangePassword}
+                  disabled={saving}
+                  className="px-8 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FiLock />
                   {saving ? 'Updating...' : 'Update Password'}
-                </MagneticButton>
+                </motion.button>
               </div>
 
-              <div className="mt-8 pt-8 border-t border-white/10">
+              <div className="mt-8 pt-8 border-t border-[#2a2f3e]">
                 <h4 className="text-xl font-bold text-white mb-4">Two-Factor Authentication</h4>
-                <p className="text-gray-400 mb-4">
+                <p className="text-[#94a3b8] mb-4">
                   Add an extra layer of security to your account by enabling two-factor authentication.
                 </p>
                 <motion.button
-                  className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all"
+                  className="px-6 py-3 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -435,19 +438,19 @@ export default function ProfilePage() {
                 </motion.button>
               </div>
 
-              <div className="mt-8 pt-8 border-t border-white/10">
+              <div className="mt-8 pt-8 border-t border-[#2a2f3e]">
                 <h4 className="text-xl font-bold text-white mb-4">Account Actions</h4>
-                <p className="text-gray-400 mb-4">
+                <p className="text-[#94a3b8] mb-4">
                   Sign out from your account or manage your session.
                 </p>
                 <SignOutButton className="w-full sm:w-auto" />
               </div>
-            </GlassmorphicCard>
+            </div>
           )}
 
           {/* Preferences Tab */}
           {activeTab === 'preferences' && (
-            <GlassmorphicCard className="p-8">
+            <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Notification Preferences</h3>
 
               <div className="space-y-4">
@@ -464,18 +467,18 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all"
+                    className="flex items-center justify-between p-4 rounded-xl bg-[#0a0f1e] hover:bg-[#0a0f1e]/80 transition-all border border-[#2a2f3e]"
                   >
                     <div>
                       <h4 className="text-white font-semibold mb-1">{pref.label}</h4>
-                      <p className="text-sm text-gray-400">{pref.description}</p>
+                      <p className="text-sm text-[#94a3b8]">{pref.description}</p>
                     </div>
                     <motion.button
                       onClick={() => handlePreferenceChange(pref.key)}
                       className={`relative w-16 h-8 rounded-full transition-all ${
                         preferences[pref.key as keyof typeof preferences]
-                          ? 'bg-gradient-to-r from-purple-600 to-pink-600'
-                          : 'bg-gray-600'
+                          ? 'bg-gradient-to-r from-[#00d4ff] to-[#00ff88]'
+                          : 'bg-[#2a2f3e]'
                       }`}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -490,12 +493,12 @@ export default function ProfilePage() {
                   </motion.div>
                 ))}
               </div>
-            </GlassmorphicCard>
+            </div>
           )}
 
           {/* Activity Tab */}
           {activeTab === 'activity' && (
-            <GlassmorphicCard className="p-8">
+            <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Recent Activity</h3>
 
               <div className="space-y-4">
@@ -505,27 +508,27 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all"
+                    className="flex items-center gap-4 p-4 rounded-xl bg-[#0a0f1e] hover:bg-[#0a0f1e]/80 transition-all border border-[#2a2f3e]"
                   >
                     <div className={`p-3 rounded-full ${
-                      activity.type === 'play' ? 'bg-blue-500/20 text-blue-400' :
-                      activity.type === 'favorite' ? 'bg-red-500/20 text-red-400' :
-                      activity.type === 'claim' ? 'bg-green-500/20 text-green-400' :
-                      'bg-purple-500/20 text-purple-400'
+                      activity.type === 'play' ? 'bg-[#00d4ff]/20 text-[#00d4ff]' :
+                      activity.type === 'favorite' ? 'bg-[#ff1b6b]/20 text-[#ff1b6b]' :
+                      activity.type === 'claim' ? 'bg-[#00ff88]/20 text-[#00ff88]' :
+                      'bg-[#8b5cf6]/20 text-[#8b5cf6]'
                     }`}>
                       {activity.type === 'play' && <FiActivity />}
-                      {activity.type === 'favorite' && <FiUser />}
-                      {activity.type === 'claim' && <FiMail />}
-                      {activity.type === 'search' && <FiBell />}
+                      {activity.type === 'favorite' && <FiHeart />}
+                      {activity.type === 'claim' && <FiGift />}
+                      {activity.type === 'search' && <FiSearch />}
                     </div>
                     <div className="flex-1">
                       <p className="text-white font-medium">{activity.description}</p>
-                      <p className="text-sm text-gray-500">{activity.timestamp}</p>
+                      <p className="text-sm text-[#64748b]">{activity.timestamp}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </GlassmorphicCard>
+            </div>
           )}
         </motion.div>
       </div>
