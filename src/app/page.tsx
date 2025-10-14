@@ -118,21 +118,29 @@ export default function HomePage() {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
 
-        {/* Large atmospheric glows - more prominent */}
-        <div className="absolute top-0 right-1/4 w-[700px] h-[700px] bg-[#ff1b6b]/30 rounded-full blur-[150px]" />
-        <div className="absolute top-1/4 right-1/3 w-[600px] h-[600px] bg-[#00d4ff]/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-[#00ff88]/15 rounded-full blur-[180px]" />
+        {/* Large atmospheric glows - matching reference design with more red/pink */}
+        <div className="absolute top-0 right-1/4 w-[900px] h-[900px] bg-[#ff1b6b]/40 rounded-full blur-[200px]" />
+        <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-[#ff4d8f]/35 rounded-full blur-[180px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/15 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-[#00ff88]/10 rounded-full blur-[180px]" />
 
-        {/* Radio Tower Silhouette - Large and prominent */}
-        <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-50">
+        {/* Radio Tower Silhouette - More subtle like reference */}
+        <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-25">
           <svg
             width="900"
             height="1000"
             viewBox="0 0 900 1000"
             fill="none"
             className="absolute bottom-0 right-0 md:right-10"
-            style={{ filter: 'drop-shadow(0 0 40px rgba(255, 27, 107, 0.4))' }}
+            style={{ filter: 'drop-shadow(0 0 80px rgba(255, 27, 107, 0.8)) drop-shadow(0 0 120px rgba(255, 77, 143, 0.6))' }}
           >
+            {/* Strong red glow around tower top */}
+            <circle cx="450" cy="100" r="150" fill="#ff1b6b" opacity="0.15">
+              <animate attributeName="opacity" values="0.15;0.25;0.15" dur="3s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="450" cy="150" r="200" fill="#ff4d8f" opacity="0.1">
+              <animate attributeName="opacity" values="0.1;0.2;0.1" dur="4s" repeatCount="indefinite" />
+            </circle>
             {/* Main Tower Structure - Detailed lattice */}
             <g opacity="0.9">
               {/* Tower sides */}
@@ -231,10 +239,11 @@ export default function HomePage() {
 
             <defs>
               <linearGradient id="heroTowerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.95" />
-                <stop offset="35%" stopColor="#ff6b00" stopOpacity="0.8" />
-                <stop offset="65%" stopColor="#00d4ff" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#00ff88" stopOpacity="0.4" />
+                <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.9" />
+                <stop offset="30%" stopColor="#ff4d8f" stopOpacity="0.75" />
+                <stop offset="60%" stopColor="#ff6b00" stopOpacity="0.6" />
+                <stop offset="80%" stopColor="#00d4ff" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#00ff88" stopOpacity="0.3" />
               </linearGradient>
             </defs>
           </svg>
