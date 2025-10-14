@@ -118,9 +118,130 @@ export default function HomePage() {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
 
-        {/* Animated background elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-40 right-10 w-96 h-96 bg-[#ff1b6b]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        {/* Large atmospheric glows - more prominent */}
+        <div className="absolute top-0 right-1/4 w-[700px] h-[700px] bg-[#ff1b6b]/30 rounded-full blur-[150px]" />
+        <div className="absolute top-1/4 right-1/3 w-[600px] h-[600px] bg-[#00d4ff]/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-[#00ff88]/15 rounded-full blur-[180px]" />
+
+        {/* Radio Tower Silhouette - Large and prominent */}
+        <div className="absolute inset-0 flex items-end justify-center md:justify-end pointer-events-none opacity-50">
+          <svg
+            width="900"
+            height="1000"
+            viewBox="0 0 900 1000"
+            fill="none"
+            className="absolute bottom-0 right-0 md:right-10"
+            style={{ filter: 'drop-shadow(0 0 40px rgba(255, 27, 107, 0.4))' }}
+          >
+            {/* Main Tower Structure - Detailed lattice */}
+            <g opacity="0.9">
+              {/* Tower sides */}
+              <line x1="380" y1="100" x2="420" y2="950" stroke="url(#heroTowerGradient)" strokeWidth="8" />
+              <line x1="520" y1="100" x2="480" y2="950" stroke="url(#heroTowerGradient)" strokeWidth="8" />
+
+              {/* Horizontal and diagonal beams - detailed lattice */}
+              {[150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900].map((y, i) => {
+                const leftX = 380 + (40 / 850) * (y - 100)
+                const rightX = 520 - (40 / 850) * (y - 100)
+                return (
+                  <g key={i}>
+                    <line
+                      x1={leftX}
+                      y1={y}
+                      x2={rightX}
+                      y2={y}
+                      stroke="url(#heroTowerGradient)"
+                      strokeWidth="4"
+                      opacity="0.7"
+                    />
+                    {/* X-pattern cross beams */}
+                    {i % 2 === 0 && (
+                      <>
+                        <line
+                          x1={leftX}
+                          y1={y}
+                          x2={rightX}
+                          y2={y + 50}
+                          stroke="url(#heroTowerGradient)"
+                          strokeWidth="2.5"
+                          opacity="0.5"
+                        />
+                        <line
+                          x1={rightX}
+                          y1={y}
+                          x2={leftX}
+                          y2={y + 50}
+                          stroke="url(#heroTowerGradient)"
+                          strokeWidth="2.5"
+                          opacity="0.5"
+                        />
+                      </>
+                    )}
+                  </g>
+                )
+              })}
+            </g>
+
+            {/* Antenna Mast */}
+            <line x1="450" y1="20" x2="450" y2="100" stroke="url(#heroTowerGradient)" strokeWidth="5" opacity="0.95" />
+
+            {/* Blinking red light */}
+            <circle cx="450" cy="20" r="10" fill="#ff1b6b" opacity="0.95">
+              <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="450" cy="20" r="20" fill="#ff1b6b" opacity="0.5">
+              <animate attributeName="opacity" values="0.5;0;0.5" dur="1.5s" repeatCount="indefinite" />
+              <animate attributeName="r" values="20;30;20" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+
+            {/* Signal waves */}
+            <g opacity="0.7">
+              {[0, 1, 2, 3].map((i) => (
+                <circle
+                  key={i}
+                  cx="450"
+                  cy="60"
+                  r="35"
+                  stroke="#00d4ff"
+                  strokeWidth="2.5"
+                  fill="none"
+                  opacity="0.5"
+                >
+                  <animate
+                    attributeName="r"
+                    values="35;90;140"
+                    dur="4s"
+                    begin={`${i * 1}s`}
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0.7;0.3;0"
+                    dur="4s"
+                    begin={`${i * 1}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              ))}
+            </g>
+
+            {/* Platform details */}
+            <rect x="410" y="450" width="80" height="5" fill="url(#heroTowerGradient)" opacity="0.8" />
+            <rect x="415" y="700" width="70" height="5" fill="url(#heroTowerGradient)" opacity="0.8" />
+
+            <defs>
+              <linearGradient id="heroTowerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ff1b6b" stopOpacity="0.95" />
+                <stop offset="35%" stopColor="#ff6b00" stopOpacity="0.8" />
+                <stop offset="65%" stopColor="#00d4ff" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#00ff88" stopOpacity="0.4" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        {/* Additional foreground atmospheric glow */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/15 rounded-full blur-3xl animate-pulse" />
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="text-center">
