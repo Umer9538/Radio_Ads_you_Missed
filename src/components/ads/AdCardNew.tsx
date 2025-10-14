@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { FiPlay, FiHeart, FiMapPin, FiClock, FiRadio } from 'react-icons/fi'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 interface AdCardProps {
   ad: {
@@ -32,11 +34,77 @@ interface AdCardProps {
 }
 
 export default function AdCardNew({ ad }: AdCardProps) {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [isFavorite, setIsFavorite] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false)
 
   // Generate random waveform heights for visualization
   const waveformBars = Array.from({ length: 8 }, () => Math.random() * 60 + 20)
+
+  // Check favorite status on mount
+  useEffect(() => {
+    if (status === 'authenticated') {
+      checkFavoriteStatus()
+    }
+  }, [status, ad.id])
+
+  const checkFavoriteStatus = async () => {
+    try {
+      const response = await fetch(`/api/favorites/${ad.id}`)
+      const data = await response.json()
+      if (data.success) {
+        setIsFavorite(data.data.isFavorited)
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error)
+    }
+  }
+
+  const toggleFavorite = async () => {
+    // Redirect to sign in if not authenticated
+    if (status === 'unauthenticated') {
+      router.push(`/auth/signin?callbackUrl=${window.location.pathname}`)
+      return
+    }
+
+    if (isFavoriteLoading) return
+
+    try {
+      setIsFavoriteLoading(true)
+
+      if (isFavorite) {
+        // Remove from favorites
+        const response = await fetch(`/api/favorites/${ad.id}`, {
+          method: 'DELETE',
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          setIsFavorite(false)
+        }
+      } else {
+        // Add to favorites
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ adId: ad.id }),
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          setIsFavorite(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    } finally {
+      setIsFavoriteLoading(false)
+    }
+  }
 
   const formatTimeAgo = (date: Date) => {
     const now = new Date()
@@ -114,10 +182,11 @@ export default function AdCardNew({ ad }: AdCardProps) {
             </div>
 
             <motion.button
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="flex-shrink-0"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              onClick={toggleFavorite}
+              disabled={isFavoriteLoading}
+              className="flex-shrink-0 disabled:opacity-50"
+              whileHover={{ scale: isFavoriteLoading ? 1 : 1.1 }}
+              whileTap={{ scale: isFavoriteLoading ? 1 : 0.9 }}
             >
               <FiHeart
                 className={`${
