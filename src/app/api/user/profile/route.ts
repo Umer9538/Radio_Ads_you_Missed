@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { hash } from 'bcryptjs'
 
 // GET /api/user/profile - Get current user's profile
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
 // PATCH /api/user/profile - Update current user's profile
 export async function PATCH(request: Request) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
 
     if (!session?.user?.email) {
       return NextResponse.json(

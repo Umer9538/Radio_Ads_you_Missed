@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { hash, compare } from 'bcryptjs'
 
 // PATCH /api/user/password - Change user password
 export async function PATCH(request: Request) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
 
     if (!session?.user?.email) {
       return NextResponse.json(
