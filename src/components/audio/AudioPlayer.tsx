@@ -9,24 +9,34 @@ import {
   FiVolumeX,
   FiSkipBack,
   FiSkipForward,
-  FiDownload
+  FiDownload,
+  FiRepeat,
+  FiGift
 } from 'react-icons/fi'
 import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
 
 interface AudioPlayerProps {
   audioUrl: string
   title: string
+  brand?: string
+  duration?: number
+  offerTimestamp?: number | null
   onPlay?: () => void
   onPause?: () => void
   onEnded?: () => void
+  className?: string
 }
 
 export default function AudioPlayer({
   audioUrl,
   title,
+  brand,
+  duration: initialDuration,
+  offerTimestamp,
   onPlay,
   onPause,
-  onEnded
+  onEnded,
+  className = ''
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
@@ -35,9 +45,12 @@ export default function AudioPlayer({
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const [duration, setDuration] = useState(initialDuration || 0)
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
+  const [playbackRate, setPlaybackRate] = useState(1)
+  const [isLooping, setIsLooping] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [frequencyData, setFrequencyData] = useState<number[]>(new Array(32).fill(0))
 
   useEffect(() => {
@@ -142,6 +155,25 @@ export default function AudioPlayer({
     }
   }
 
+  const handlePlaybackRateChange = (rate: number) => {
+    setPlaybackRate(rate)
+    if (audioRef.current) {
+      audioRef.current.playbackRate = rate
+    }
+  }
+
+  const toggleLoop = () => {
+    setIsLooping(!isLooping)
+    if (audioRef.current) {
+      audioRef.current.loop = !isLooping
+    }
+  }
+
+  const skipToOffer = () => {
+    if (!audioRef.current || !offerTimestamp) return
+    audioRef.current.currentTime = offerTimestamp
+  }
+
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value)
     setCurrentTime(newTime)
@@ -170,7 +202,7 @@ export default function AudioPlayer({
         {frequencyData.map((value, index) => (
           <motion.div
             key={index}
-            className="flex-1 rounded-t-full bg-gradient-to-t from-purple-600 via-pink-500 to-blue-500"
+            className="flex-1 rounded-t-full bg-gradient-to-t from-[#00d4ff] via-[#00ff88] to-[#00d4ff]"
             animate={{
               height: `${Math.max(8, value * 100)}%`,
               opacity: isPlaying ? 0.8 : 0.3
@@ -181,7 +213,7 @@ export default function AudioPlayer({
             }}
             style={{
               maxWidth: '8px',
-              boxShadow: isPlaying ? `0 0 ${10 + value * 20}px rgba(139, 92, 246, ${value})` : 'none'
+              boxShadow: isPlaying ? `0 0 ${10 + value * 20}px rgba(0, 212, 255, ${value})` : 'none'
             }}
           />
         ))}
@@ -201,6 +233,11 @@ export default function AudioPlayer({
         >
           {title}
         </motion.h3>
+        {brand && (
+          <p className="text-[#94a3b8] text-sm">
+            {brand}
+          </p>
+        )}
       </div>
 
       {/* Progress Bar */}
@@ -214,13 +251,13 @@ export default function AudioPlayer({
           className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10"
           style={{
             background: `linear-gradient(to right,
-              #8b5cf6 0%,
-              #8b5cf6 ${(currentTime / duration) * 100}%,
+              #00d4ff 0%,
+              #00d4ff ${(currentTime / duration) * 100}%,
               rgba(255,255,255,0.1) ${(currentTime / duration) * 100}%,
               rgba(255,255,255,0.1) 100%)`
           }}
         />
-        <div className="flex justify-between text-sm text-gray-400 mt-2">
+        <div className="flex justify-between text-sm text-[#94a3b8] mt-2">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
@@ -241,17 +278,17 @@ export default function AudioPlayer({
         {/* Play/Pause */}
         <motion.button
           onClick={togglePlay}
-          className="relative p-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl shadow-purple-500/50"
+          className="relative p-6 rounded-full bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-white shadow-2xl shadow-[#00d4ff]/50"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           animate={{
             boxShadow: isPlaying
               ? [
-                  '0 0 20px rgba(139, 92, 246, 0.5)',
-                  '0 0 40px rgba(139, 92, 246, 0.8)',
-                  '0 0 20px rgba(139, 92, 246, 0.5)',
+                  '0 0 20px rgba(0, 212, 255, 0.5)',
+                  '0 0 40px rgba(0, 212, 255, 0.8)',
+                  '0 0 20px rgba(0, 212, 255, 0.5)',
                 ]
-              : '0 0 20px rgba(139, 92, 246, 0.3)'
+              : '0 0 20px rgba(0, 212, 255, 0.3)'
           }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
@@ -290,6 +327,19 @@ export default function AudioPlayer({
           <FiSkipForward className="text-xl" />
         </motion.button>
 
+        {/* Skip to Offer */}
+        {offerTimestamp && (
+          <motion.button
+            onClick={skipToOffer}
+            className="p-3 rounded-full bg-gradient-to-r from-[#00ff88] to-[#00d4ff] text-white hover:opacity-90 transition-all"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            title="Skip to offer"
+          >
+            <FiGift className="text-xl" />
+          </motion.button>
+        )}
+
         {/* Download */}
         <motion.a
           href={audioUrl}
@@ -300,6 +350,46 @@ export default function AudioPlayer({
         >
           <FiDownload className="text-xl" />
         </motion.a>
+      </div>
+
+      {/* Additional Controls */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        {/* Playback Speed */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-[#94a3b8]">Speed:</span>
+          <div className="flex gap-1">
+            {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
+              <motion.button
+                key={rate}
+                onClick={() => handlePlaybackRateChange(rate)}
+                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                  playbackRate === rate
+                    ? 'bg-[#00d4ff] text-white'
+                    : 'bg-white/10 text-[#94a3b8] hover:bg-white/20'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {rate}x
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Loop Toggle */}
+        <motion.button
+          onClick={toggleLoop}
+          className={`p-2 rounded-full transition-all ${
+            isLooping
+              ? 'bg-[#00ff88] text-white'
+              : 'bg-white/10 text-white hover:bg-white/20'
+          }`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title={isLooping ? 'Loop enabled' : 'Loop disabled'}
+        >
+          <FiRepeat className="text-lg" />
+        </motion.button>
       </div>
 
       {/* Volume Control */}
@@ -327,8 +417,8 @@ export default function AudioPlayer({
           className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
           style={{
             background: `linear-gradient(to right,
-              #8b5cf6 0%,
-              #8b5cf6 ${volume * 100}%,
+              #00d4ff 0%,
+              #00d4ff ${volume * 100}%,
               rgba(255,255,255,0.1) ${volume * 100}%,
               rgba(255,255,255,0.1) 100%)`
           }}

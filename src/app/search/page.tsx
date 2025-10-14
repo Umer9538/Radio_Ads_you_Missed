@@ -6,20 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi'
 import AdCardNew from '@/components/ads/AdCardNew'
 
-const categories = [
-  'All',
-  'Retail',
-  'Food & Beverage',
-  'Automotive',
-  'Entertainment',
-  'Health & Beauty',
-  'Technology',
-  'Real Estate',
-  'Education',
-]
-
-const stations = ['All Stations', 'The Edge', 'The Rock', 'ZM', 'Newstalk ZB']
-
 function SearchContent() {
   const searchParams = useSearchParams()
   const [ads, setAds] = useState<any[]>([])
@@ -28,10 +14,43 @@ function SearchContent() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedStation, setSelectedStation] = useState('All Stations')
   const [showFilters, setShowFilters] = useState(false)
+  const [categories, setCategories] = useState<string[]>(['All'])
+  const [stations, setStations] = useState<string[]>(['All Stations'])
+
+  useEffect(() => {
+    fetchCategories()
+    fetchStations()
+  }, [])
 
   useEffect(() => {
     fetchAds()
   }, [searchQuery, selectedCategory, selectedStation])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      const data = await response.json()
+      if (data.success) {
+        const categoryNames = data.data.map((cat: any) => cat.name)
+        setCategories(['All', ...categoryNames])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchStations = async () => {
+    try {
+      const response = await fetch('/api/stations')
+      const data = await response.json()
+      if (data.success) {
+        const stationNames = data.data.map((station: any) => station.name)
+        setStations(['All Stations', ...stationNames])
+      }
+    } catch (error) {
+      console.error('Error fetching stations:', error)
+    }
+  }
 
   const fetchAds = async () => {
     try {

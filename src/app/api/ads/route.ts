@@ -17,7 +17,9 @@ export async function GET(request: Request) {
 
     // Filters
     const stationId = searchParams.get('stationId')
+    const stationName = searchParams.get('station')
     const categoryId = searchParams.get('categoryId')
+    const categoryName = searchParams.get('category')
     const brand = searchParams.get('brand')
     const dateFrom = searchParams.get('dateFrom')
     const dateTo = searchParams.get('dateTo')
@@ -39,12 +41,22 @@ export async function GET(request: Request) {
       ]
     }
 
+    // Filter by station (ID or name)
     if (stationId) {
       where.stationId = stationId
+    } else if (stationName) {
+      where.station = {
+        name: { equals: stationName, mode: 'insensitive' }
+      }
     }
 
+    // Filter by category (ID or name)
     if (categoryId) {
       where.categoryId = categoryId
+    } else if (categoryName) {
+      where.category = {
+        name: { equals: categoryName, mode: 'insensitive' }
+      }
     }
 
     if (brand) {
