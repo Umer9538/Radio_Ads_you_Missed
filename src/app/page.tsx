@@ -1,456 +1,474 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FiSearch, FiRadio, FiGift, FiTrendingUp, FiPlay } from 'react-icons/fi'
-import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
-import FloatingParticles from '@/components/effects/FloatingParticles'
-import MorphingBlob from '@/components/ui/MorphingBlob'
-import HolographicText from '@/components/ui/HolographicText'
-import MagneticButton from '@/components/ui/MagneticButton'
-
-interface Ad {
-  id: string
-  title: string
-  description?: string | null
-  brand: string
-  duration: number
-  airedAt: string
-  thumbnailUrl?: string | null
-  playCount: number
-  station: {
-    name: string
-    frequency?: string | null
-  }
-  category: {
-    name: string
-    slug: string
-  }
-  offers: Array<{
-    id: string
-    title: string
-    expiresAt?: string | null
-  }>
-}
+import {
+  FiSearch, FiPlay, FiGift, FiUsers, FiTrendingUp,
+  FiRadio, FiActivity, FiZap
+} from 'react-icons/fi'
+import Navbar from '@/components/layout/Navbar'
 
 export default function HomePage() {
   const router = useRouter()
-  const [ads, setAds] = useState<Ad[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [stats, setStats] = useState({
-    totalAds: 0,
-    totalStations: 0,
-    activeOffers: 0
-  })
-
-  useEffect(() => {
-    fetchAds()
-    fetchStats()
-  }, [])
-
-  const fetchAds = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/ads?limit=12&sortBy=date_desc')
-      const data = await response.json()
-
-      if (data.success) {
-        setAds(data.data)
-      }
-    } catch (error) {
-      console.error('Error fetching ads:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchStats = async () => {
-    try {
-      const [adsRes, stationsRes] = await Promise.all([
-        fetch('/api/ads?limit=1'),
-        fetch('/api/stations')
-      ])
-
-      const adsData = await adsRes.json()
-      const stationsData = await stationsRes.json()
-
-      if (adsData.success && stationsData.success) {
-        setStats({
-          totalAds: adsData.data.length,
-          totalStations: stationsData.data.length,
-          activeOffers: adsData.data.filter((ad: Ad) => ad.offers && ad.offers.length > 0).length
-        })
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error)
-    }
-  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+    } else {
+      router.push('/search')
     }
   }
 
-  return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated Background */}
-      <FloatingParticles count={60} />
-      <MorphingBlob className="top-0 left-0" color="from-blue-500 to-cyan-500" size={600} />
-      <MorphingBlob className="bottom-0 right-0" color="from-purple-500 to-pink-500" size={500} />
-      <MorphingBlob className="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" color="from-pink-500 to-orange-500" size={400} />
+  const stats = [
+    { value: '50K+', label: 'Ads Found', color: '#00d4ff' },
+    { value: '24/7', label: 'Monitoring', color: '#00ff88' },
+    { value: '15', label: 'Radio Stations', color: '#ff1b6b' },
+    { value: 'Free', label: 'For Users', color: '#8b5cf6' }
+  ]
 
-      <div className="relative z-10">
-        {/* Hero Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            {/* Animated Radio Icon */}
+  const features = [
+    {
+      title: 'For Listeners',
+      description: 'Never miss an offer again. Search, replay, and claim vouchers from ads you heard.',
+      icon: FiUsers,
+      color: '#00d4ff',
+      benefits: [
+        'Search recent ads',
+        'Claim vouchers',
+        'Save favorites'
+      ],
+      cta: 'Find that ad you just heard',
+      ctaLink: '/search'
+    },
+    {
+      title: 'For Advertisers',
+      description: 'Turn missed ads into captured sales. Upload ads and deliver vouchers directly.',
+      icon: FiTrendingUp,
+      color: '#00ff88',
+      benefits: [
+        'Upload ad content',
+        'Deliver vouchers',
+        'View analytics'
+      ],
+      cta: 'Turn missed ads into sales',
+      ctaLink: '/for-advertisers'
+    },
+    {
+      title: 'For Stations',
+      description: 'Upsell your advertisers with zero effort. Earn margin on premium features.',
+      icon: FiRadio,
+      color: '#ff1b6b',
+      benefits: [
+        'Sync ad schedules',
+        'Earn commission',
+        'Zero effort setup'
+      ],
+      cta: 'Upsell with zero effort',
+      ctaLink: '/for-stations'
+    },
+    {
+      title: 'For Agencies',
+      description: 'Offer clients a radio + digital package. Manage multiple advertisers seamlessly.',
+      icon: FiZap,
+      color: '#8b5cf6',
+      benefits: [
+        'Manage clients',
+        'Earn margin',
+        'Digital + Radio'
+      ],
+      cta: 'Radio + digital package',
+      ctaLink: '/for-agencies'
+    }
+  ]
+
+  const howItWorks = [
+    {
+      step: '1',
+      icon: FiSearch,
+      title: 'Search',
+      description: 'Type keywords, brand names, or describe what you remember from the ad',
+      color: '#00d4ff'
+    },
+    {
+      step: '2',
+      icon: FiPlay,
+      title: 'Listen',
+      description: "Play the ad snippet to confirm it's the one you heard on the radio",
+      color: '#8b5cf6'
+    },
+    {
+      step: '3',
+      icon: FiGift,
+      title: 'Claim',
+      description: "Get the advertiser's contact info and claim any available vouchers or offers",
+      color: '#ff1b6b'
+    }
+  ]
+
+  return (
+    <div className="min-h-screen bg-[#0a0f1e]">
+      <Navbar />
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
+
+        {/* Animated background elements */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#00d4ff]/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-40 right-10 w-96 h-96 bg-[#ff1b6b]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center">
+            {/* Badge */}
             <motion.div
-              className="text-9xl mb-8"
-              animate={{
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.05, 1]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1a1f2e] border border-[#00d4ff]/30 mb-8"
             >
-              📻
+              <FiZap className="text-[#00d4ff]" />
+              <span className="text-sm text-[#94a3b8]">Never Miss Another Offer</span>
             </motion.div>
 
             {/* Hero Title */}
-            <HolographicText as="h1" className="text-6xl md:text-7xl mb-6">
-              Never Miss a Radio Ad
-            </HolographicText>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto"
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6"
             >
-              Search, replay, and claim exclusive offers from New Zealand radio advertisements
+              Find That Ad You{' '}
+              <span className="bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+                Just Heard
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-lg md:text-xl text-[#94a3b8] max-w-3xl mx-auto mb-12"
+            >
+              Search, replay, and claim offers from radio ads you partially heard. Never miss out on a great deal again.
             </motion.p>
 
-            {/* Revolutionary Search Bar */}
-            <motion.form
-              onSubmit={handleSearch}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="max-w-3xl mx-auto mb-12"
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             >
-              <GlassmorphicCard className="p-2">
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
-                    <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
-                    <input
-                      type="text"
-                      placeholder="Search for ads, brands, or offers..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg"
-                    />
-                  </div>
-                  <MagneticButton type="submit" className="px-8">
-                    <FiSearch className="mr-2" />
-                    Search
-                  </MagneticButton>
-                </div>
-              </GlassmorphicCard>
-            </motion.form>
+              <Link href="/search">
+                <motion.button
+                  className="px-8 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-lg hover:opacity-90 transition-all flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FiSearch />
+                  Start searching now
+                </motion.button>
+              </Link>
 
-            {/* Animated Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-20">
-              {[
-                { icon: FiRadio, label: 'Radio Ads', value: stats.totalAds, color: 'from-blue-500 to-cyan-500', delay: 0.6 },
-                { icon: FiTrendingUp, label: 'Radio Stations', value: stats.totalStations, color: 'from-purple-500 to-pink-500', delay: 0.7 },
-                { icon: FiGift, label: 'Active Offers', value: stats.activeOffers, color: 'from-green-500 to-emerald-500', delay: 0.8 }
-              ].map((stat, index) => (
+              <motion.button
+                className="px-8 py-4 rounded-full border-2 border-[#00d4ff] text-[#00d4ff] font-semibold text-lg hover:bg-[#00d4ff]/10 transition-all flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiPlay />
+                Watch Demo
+              </motion.button>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            >
+              {stats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: stat.delay }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  className="text-center"
                 >
-                  <GlassmorphicCard className="p-8 text-center group cursor-pointer">
-                    <motion.div
-                      className={`inline-block p-4 rounded-full bg-gradient-to-br ${stat.color} mb-4`}
-                      whileHover={{ scale: 1.1, rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <stat.icon className="text-3xl text-white" />
-                    </motion.div>
-                    <motion.div
-                      className="text-4xl font-bold text-white mb-2"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: stat.delay + 0.2, type: 'spring', stiffness: 200 }}
-                    >
-                      {stat.value}+
-                    </motion.div>
-                    <div className="text-gray-300 text-lg">{stat.label}</div>
-                  </GlassmorphicCard>
+                  <div
+                    className="text-4xl md:text-5xl font-bold mb-2"
+                    style={{ color: stat.color }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-[#94a3b8]">{stat.label}</div>
                 </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Try It Now Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#0a0f1e] to-[#1a1f2e]/30">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Try It Now
+            </h2>
+            <p className="text-lg text-[#94a3b8]">
+              Search through thousands of recent radio ads from New Zealand stations
+            </p>
+          </motion.div>
+
+          {/* Search Box */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]"
+          >
+            <form onSubmit={handleSearch} className="mb-6">
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8] text-xl" />
+                  <input
+                    type="text"
+                    placeholder="Search for ads by brand, product, or keyword..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 bg-[#0a0f1e] border border-[#2a2f3e] rounded-xl text-white placeholder-[#64748b] focus:outline-none focus:border-[#00d4ff] transition-all"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="p-4 bg-[#0a0f1e] border border-[#2a2f3e] rounded-xl hover:border-[#00d4ff] transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M2 5h16M2 10h16M2 15h16" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+                <Link href="/search">
+                  <motion.button
+                    type="submit"
+                    className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-[#0a0f1e] font-bold hover:opacity-90 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Find Ads
+                  </motion.button>
+                </Link>
+              </div>
+            </form>
+
+            {/* Filter Pills */}
+            <div className="flex flex-wrap gap-2">
+              {['Last Hour', 'Auckland', 'Retail', 'With Vouchers'].map((filter, index) => (
+                <motion.button
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  className="px-4 py-2 bg-[#0a0f1e] border border-[#2a2f3e] rounded-full text-sm text-[#94a3b8] hover:border-[#00d4ff] hover:text-white transition-all"
+                >
+                  {filter}
+                </motion.button>
               ))}
             </div>
           </motion.div>
         </div>
+      </section>
 
-        {/* Featured Ads Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Built For Everyone Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="mb-12"
-          >
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <HolographicText as="h2" className="text-4xl mb-2">
-                  Latest Radio Ads
-                </HolographicText>
-                <p className="text-gray-300 text-lg">
-                  Recently aired advertisements from NZ radio stations
-                </p>
-              </div>
-              <Link href="/search">
-                <MagneticButton>View All</MagneticButton>
-              </Link>
-            </div>
-
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <GlassmorphicCard className="h-80 animate-pulse" />
-                  </motion.div>
-                ))}
-              </div>
-            ) : ads.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {ads.map((ad, index) => (
-                  <motion.div
-                    key={ad.id}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index }}
-                  >
-                    <Link href={`/ads/${ad.id}`}>
-                      <GlassmorphicCard className="group cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300">
-                        {/* Thumbnail */}
-                        <div className="relative h-48 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 animate-gradient-xy">
-                          {ad.thumbnailUrl ? (
-                            <img
-                              src={ad.thumbnailUrl}
-                              alt={ad.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-full">
-                              <motion.div
-                                className="text-white text-6xl"
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                              >
-                                📻
-                              </motion.div>
-                            </div>
-                          )}
-
-                          {/* Play Overlay */}
-                          <motion.div
-                            className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                            whileHover={{ scale: 1 }}
-                          >
-                            <motion.div
-                              className="p-4 rounded-full bg-white/20 backdrop-blur-xl"
-                              whileHover={{ scale: 1.2 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <FiPlay className="text-white text-3xl" />
-                            </motion.div>
-                          </motion.div>
-
-                          {/* Offers Badge */}
-                          {ad.offers && ad.offers.length > 0 && (
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="absolute top-3 right-3 px-3 py-1 bg-green-500 rounded-full text-white text-xs font-bold shadow-lg"
-                            >
-                              OFFER
-                            </motion.div>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-6">
-                          <div className="flex items-center justify-between mb-2 text-xs text-gray-300">
-                            <span>{ad.station.name}</span>
-                            <span>{ad.category.name}</span>
-                          </div>
-
-                          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 transition-all">
-                            {ad.title}
-                          </h3>
-
-                          <p className="text-sm text-gray-400 mb-3 line-clamp-2">
-                            {ad.description || 'No description available'}
-                          </p>
-
-                          <div className="flex items-center justify-between text-sm text-gray-400">
-                            <span className="font-semibold">{ad.brand}</span>
-                            <span>{ad.playCount} plays</span>
-                          </div>
-                        </div>
-                      </GlassmorphicCard>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20"
-              >
-                <GlassmorphicCard className="inline-block p-12">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                    className="text-8xl mb-6"
-                  >
-                    🔍
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    No ads available yet
-                  </h3>
-                  <p className="text-gray-400">
-                    Check back soon for new radio advertisements
-                  </p>
-                </GlassmorphicCard>
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            <GlassmorphicCard className="p-12 text-center">
-              <HolographicText as="h2" className="text-5xl mb-6">
-                Start Exploring Radio Ads
-              </HolographicText>
-
-              <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-                Search through our collection of radio advertisements and never miss a great deal
-              </p>
-
-              <div className="flex flex-wrap gap-6 justify-center">
-                <Link href="/search">
-                  <MagneticButton className="px-12 py-6">
-                    <FiSearch className="mr-2 text-2xl" />
-                    <span className="text-xl">Browse All Ads</span>
-                  </MagneticButton>
-                </Link>
-
-                <Link href="/stations">
-                  <MagneticButton className="px-12 py-6">
-                    <FiRadio className="mr-2 text-2xl" />
-                    <span className="text-xl">View Stations</span>
-                  </MagneticButton>
-                </Link>
-              </div>
-            </GlassmorphicCard>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Built For Everyone
+            </h2>
+            <p className="text-lg text-[#94a3b8] max-w-3xl mx-auto">
+              Whether you're a listener, advertiser, radio station, or agency - we have solutions tailored for you.
+            </p>
           </motion.div>
-        </div>
 
-        {/* Footer */}
-        <footer className="relative z-10 border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <GlassmorphicCard className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                  <HolographicText as="h3" className="text-2xl mb-4">
-                    Radio Ads You Missed
-                  </HolographicText>
-                  <p className="text-gray-300 text-sm">
-                    Your gateway to finding and replaying radio advertisements from New Zealand stations.
-                  </p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-[#1a1f2e] rounded-2xl p-8 border-2 hover:scale-105 transition-all cursor-pointer group"
+                  style={{ borderColor: feature.color + '40' }}
+                  whileHover={{ borderColor: feature.color }}
+                >
+                  {/* Icon */}
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+                    style={{ backgroundColor: feature.color + '20' }}
+                  >
+                    <Icon className="text-3xl" style={{ color: feature.color }} />
+                  </div>
 
-                <div>
-                  <h4 className="text-white font-semibold mb-4 text-lg">Quick Links</h4>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>
-                      <Link href="/search" className="hover:text-white transition-colors">
-                        Browse Ads
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/stations" className="hover:text-white transition-colors">
-                        Radio Stations
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/categories" className="hover:text-white transition-colors">
-                        Categories
-                      </Link>
-                    </li>
+                  {/* Content */}
+                  <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
+                  <p className="text-[#94a3b8] mb-6">{feature.description}</p>
+
+                  {/* Benefits */}
+                  <ul className="space-y-2 mb-6">
+                    {feature.benefits.map((benefit, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm text-[#94a3b8]">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="8" fill={feature.color + '20'} />
+                          <path d="M5 8l2 2 4-4" stroke={feature.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        {benefit}
+                      </li>
+                    ))}
                   </ul>
-                </div>
 
-                <div>
-                  <h4 className="text-white font-semibold mb-4 text-lg">Account</h4>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>
-                      <Link href="/auth/signin" className="hover:text-white transition-colors">
-                        Sign In
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/auth/signup" className="hover:text-white transition-colors">
-                        Sign Up
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/dashboard" className="hover:text-white transition-colors">
-                        Dashboard
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 mt-8 pt-8 text-sm text-center text-gray-400">
-                © 2025 Radio Ads You Missed. All rights reserved.
-              </div>
-            </GlassmorphicCard>
+                  {/* CTA */}
+                  <Link href={feature.ctaLink}>
+                    <motion.button
+                      className="w-full py-3 rounded-xl border-2 font-semibold text-sm transition-all"
+                      style={{
+                        borderColor: feature.color,
+                        color: feature.color
+                      }}
+                      whileHover={{ backgroundColor: feature.color + '10' }}
+                    >
+                      {feature.cta} →
+                    </motion.button>
+                  </Link>
+                </motion.div>
+              )
+            })}
           </div>
-        </footer>
-      </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#1a1f2e]/30 to-[#0a0f1e]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              How It Works
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {howItWorks.map((item, index) => {
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                  className="text-center"
+                >
+                  {/* Icon Circle */}
+                  <motion.div
+                    className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
+                    style={{
+                      background: `linear-gradient(135deg, ${item.color}40, ${item.color}10)`
+                    }}
+                    whileHover={{ scale: 1.1, rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Icon className="text-4xl" style={{ color: item.color }} />
+                  </motion.div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-white mb-3">{item.title}</h3>
+
+                  {/* Description */}
+                  <p className="text-[#94a3b8]">{item.description}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-[#1a1f2e]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div>
+              <div className="flex items-baseline gap-1 mb-4">
+                <span className="text-xl font-bold text-white">Radio Ads</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+                  You Missed
+                </span>
+              </div>
+              <p className="text-sm text-[#94a3b8]">
+                Never miss a radio promotion again
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-[#94a3b8]">
+                <li><Link href="/search" className="hover:text-white transition-colors">Find Ads</Link></li>
+                <li><Link href="/stations" className="hover:text-white transition-colors">Radio Stations</Link></li>
+                <li><Link href="/categories" className="hover:text-white transition-colors">Categories</Link></li>
+              </ul>
+            </div>
+
+            {/* Solutions */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Solutions</h4>
+              <ul className="space-y-2 text-sm text-[#94a3b8]">
+                <li><Link href="/for-advertisers" className="hover:text-white transition-colors">For Advertisers</Link></li>
+                <li><Link href="/for-stations" className="hover:text-white transition-colors">For Stations</Link></li>
+                <li><Link href="/for-agencies" className="hover:text-white transition-colors">For Agencies</Link></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-[#94a3b8]">
+                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-[#1a1f2e] pt-8 text-center text-sm text-[#64748b]">
+            © 2025 Radio Ads You Missed. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
