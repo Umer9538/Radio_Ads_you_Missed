@@ -10,15 +10,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 minute
+            staleTime: 5 * 60 * 1000, // 5 minutes - increased for better performance
             refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
           },
         },
       })
   )
 
   return (
-    <SessionProvider>
+    <SessionProvider
+      refetchInterval={5 * 60} // Refetch session every 5 minutes instead of constantly
+      refetchOnWindowFocus={false} // Don't refetch on window focus
+    >
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>

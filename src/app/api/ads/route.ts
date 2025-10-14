@@ -157,7 +157,7 @@ export async function GET(request: Request) {
 
     const totalPages = Math.ceil(total / limit)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: adsWithParsedTags,
       pagination: {
@@ -168,6 +168,11 @@ export async function GET(request: Request) {
         hasMore: page < totalPages,
       },
     })
+
+    // Add caching headers for better performance
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+
+    return response
   } catch (error) {
     console.error('Error fetching ads:', error)
     return NextResponse.json(
