@@ -4,6 +4,63 @@ import { NextResponse } from "next/server"
 // Use Node.js runtime instead of Edge to support Prisma
 export const runtime = 'nodejs'
 
+/**
+ * Add security headers to response
+ */
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  const isDevelopment = process.env.NODE_ENV === 'development'
+
+  // Prevent clickjacking attacks
+  response.headers.set('X-Frame-Options', 'DENY')
+
+  // Prevent MIME type sniffing
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+
+  // Enable XSS protection (legacy browsers)
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+
+  // Referrer policy - control what information is sent in the Referer header
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  // Permissions Policy - control which browser features can be used
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()'
+  )
+
+  // Content Security Policy
+  if (!isDevelopment) {
+    const cspHeader = `
+      default-src 'self';
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' blob: data: https:;
+      font-src 'self' data:;
+      connect-src 'self' https://api.github.com;
+      media-src 'self' https: blob:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests;
+    `
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+
+    response.headers.set('Content-Security-Policy', cspHeader)
+  }
+
+  // Strict Transport Security - force HTTPS
+  if (!isDevelopment) {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains'
+    )
+  }
+
+  return response
+}
+
 export default auth((req) => {
   const { pathname } = req.nextUrl
   const isLoggedIn = !!req.auth
@@ -19,6 +76,16 @@ export default auth((req) => {
     "/auth/signin",
     "/auth/signup",
     "/auth/error",
+    "/auth/forgot-password",
+    "/auth/reset-password",
+    "/auth/verify-email",
+    "/auth/resend-verification",
+    "/about",
+    "/contact",
+    "/privacy",
+    "/for-advertisers",
+    "/for-agencies",
+    "/for-stations",
   ]
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 
@@ -29,34 +96,42 @@ export default auth((req) => {
     "/api/stations",
     "/api/categories",
     "/api/offers",
+    "/api/contact",
   ]
   const isPublicApiRoute = publicApiRoutes.some((route) =>
     pathname.startsWith(route)
   )
 
+  let response: NextResponse
+
   // Allow public routes and public API routes
   if (isPublicRoute || isPublicApiRoute) {
-    return NextResponse.next()
+    response = NextResponse.next()
+    return addSecurityHeaders(response)
   }
 
   // Protect admin routes
   if (pathname.startsWith("/admin")) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/auth/signin", req.url))
+      response = NextResponse.redirect(new URL("/auth/signin", req.url))
+      return addSecurityHeaders(response)
     }
     if (userRole !== "ADMIN" && userRole !== "SUPER_ADMIN") {
-      return NextResponse.redirect(new URL("/", req.url))
+      response = NextResponse.redirect(new URL("/", req.url))
+      return addSecurityHeaders(response)
     }
   }
 
   // Protect user dashboard routes
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/profile")) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/auth/signin", req.url))
+      response = NextResponse.redirect(new URL("/auth/signin", req.url))
+      return addSecurityHeaders(response)
     }
   }
 
-  return NextResponse.next()
+  response = NextResponse.next()
+  return addSecurityHeaders(response)
 })
 
 export const config = {

@@ -2,9 +2,33 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 import { isValidEmail } from '@/utils/helpers'
+import { rateLimit, getClientIdentifier, RateLimitConfig } from '@/lib/rate-limit'
 
 // POST /api/contact - Submit contact form
 export async function POST(request: Request) {
+  // Apply rate limiting
+  const identifier = getClientIdentifier(request)
+  const rateLimitResult = rateLimit(identifier, RateLimitConfig.contact)
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Too many contact form submissions. Please try again later.',
+        retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+        },
+      }
+    )
+  }
+
   try {
     const session = await auth()
     const body = await request.json()

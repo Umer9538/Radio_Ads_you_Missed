@@ -2,8 +2,31 @@ import { NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
 import { randomBytes } from 'crypto'
 import prisma from '@/lib/prisma'
+import { rateLimit, getClientIdentifier, RateLimitConfig } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
+  // Apply rate limiting
+  const identifier = getClientIdentifier(request)
+  const rateLimitResult = rateLimit(identifier, RateLimitConfig.auth)
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      {
+        error: 'Too many requests. Please try again later.',
+        retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+        },
+      }
+    )
+  }
+
   try {
     const body = await request.json()
     const { email, password, firstName, lastName } = body

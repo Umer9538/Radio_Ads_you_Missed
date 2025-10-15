@@ -2,9 +2,33 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { randomBytes } from 'crypto'
 import { isValidEmail } from '@/utils/helpers'
+import { rateLimit, getClientIdentifier, RateLimitConfig } from '@/lib/rate-limit'
 
 // POST /api/auth/forgot-password - Request password reset
 export async function POST(request: Request) {
+  // Apply rate limiting
+  const identifier = getClientIdentifier(request)
+  const rateLimitResult = rateLimit(identifier, RateLimitConfig.auth)
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Too many password reset requests. Please try again later.',
+        retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+          'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+        },
+      }
+    )
+  }
+
   try {
     const body = await request.json()
     const { email } = body

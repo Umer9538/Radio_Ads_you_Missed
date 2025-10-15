@@ -9,6 +9,7 @@ import {
   FiPlus, FiEdit, FiTrash2, FiEye, FiGrid
 } from 'react-icons/fi'
 import Link from 'next/link'
+import Pagination from '@/components/ui/Pagination'
 
 interface AdminStats {
   totalUsers: number
@@ -32,6 +33,9 @@ export default function AdminDashboardPage() {
   })
   const [recentAds, setRecentAds] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalAds, setTotalAds] = useState(0)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -46,14 +50,20 @@ export default function AdminDashboardPage() {
     }
   }, [status, session, router])
 
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
+      fetchAds(currentPage)
+    }
+  }, [currentPage])
+
   const fetchAdminData = async () => {
     try {
       setLoading(true)
 
-      // Fetch admin stats and recent ads
+      // Fetch admin stats and ads
       const [statsRes, adsRes] = await Promise.all([
         fetch('/api/admin/stats'),
-        fetch('/api/ads?limit=10')
+        fetch(`/api/ads?page=${currentPage}&limit=10`)
       ])
 
       const statsData = await statsRes.json()
@@ -65,12 +75,37 @@ export default function AdminDashboardPage() {
 
       if (adsData.success) {
         setRecentAds(adsData.data)
+        setTotalPages(adsData.pagination.totalPages)
+        setTotalAds(adsData.pagination.total)
       }
     } catch (error) {
       console.error('Error fetching admin data:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchAds = async (page: number) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/ads?page=${page}&limit=10`)
+      const data = await response.json()
+
+      if (data.success) {
+        setRecentAds(data.data)
+        setTotalPages(data.pagination.totalPages)
+        setTotalAds(data.pagination.total)
+      }
+    } catch (error) {
+      console.error('Error fetching ads:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const statCards = [
@@ -249,8 +284,13 @@ export default function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-white">
-              Recent Advertisements
+              All Advertisements
             </h2>
+            {!loading && totalAds > 0 && (
+              <div className="text-[#94a3b8]">
+                {totalAds} total ads • Page {currentPage} of {totalPages}
+              </div>
+            )}
           </div>
 
           <div className="bg-[#1a1f2e] rounded-2xl border border-[#2a2f3e] overflow-hidden">
@@ -315,6 +355,17 @@ export default function AdminDashboardPage() {
               </table>
             </div>
           </div>
+
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

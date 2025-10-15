@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi'
 import AdCardNew from '@/components/ads/AdCardNew'
+import Pagination from '@/components/ui/Pagination'
 
 function SearchContent() {
   const searchParams = useSearchParams()
@@ -16,6 +17,9 @@ function SearchContent() {
   const [showFilters, setShowFilters] = useState(false)
   const [categories, setCategories] = useState<string[]>(['All'])
   const [stations, setStations] = useState<string[]>(['All Stations'])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalResults, setTotalResults] = useState(0)
 
   useEffect(() => {
     fetchCategories()
@@ -23,8 +27,13 @@ function SearchContent() {
   }, [])
 
   useEffect(() => {
-    fetchAds()
+    setCurrentPage(1) // Reset to page 1 when filters change
+    fetchAds(1)
   }, [searchQuery, selectedCategory, selectedStation])
+
+  useEffect(() => {
+    fetchAds(currentPage)
+  }, [currentPage])
 
   const fetchCategories = async () => {
     try {
@@ -52,10 +61,12 @@ function SearchContent() {
     }
   }
 
-  const fetchAds = async () => {
+  const fetchAds = async (page: number) => {
     try {
       setLoading(true)
       const params = new URLSearchParams()
+      params.append('page', page.toString())
+      params.append('limit', '20')
       if (searchQuery) params.append('query', searchQuery)
       if (selectedCategory !== 'All') params.append('category', selectedCategory)
       if (selectedStation !== 'All Stations') params.append('station', selectedStation)
@@ -65,12 +76,19 @@ function SearchContent() {
 
       if (data.success) {
         setAds(data.data)
+        setTotalPages(data.pagination.totalPages)
+        setTotalResults(data.pagination.total)
       }
     } catch (error) {
       console.error('Error fetching ads:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -169,13 +187,14 @@ function SearchContent() {
         </motion.div>
 
         {/* Results Count */}
-        {!loading && ads.length > 0 && (
+        {!loading && totalResults > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mb-4 text-[#94a3b8]"
           >
-            Found {ads.length} {ads.length === 1 ? 'ad' : 'ads'}
+            Found {totalResults} {totalResults === 1 ? 'ad' : 'ads'}
+            {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
           </motion.div>
         )}
 
@@ -229,6 +248,21 @@ function SearchContent() {
                 Try adjusting your search or filters
               </p>
             </div>
+          </motion.div>
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8"
+          >
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </motion.div>
         )}
       </div>
