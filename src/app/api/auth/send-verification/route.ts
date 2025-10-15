@@ -1,77 +1,61 @@
 import { NextResponse } from 'next/server'
-import { hash } from 'bcryptjs'
-import { randomBytes } from 'crypto'
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { randomBytes } from 'crypto'
 
+// POST /api/auth/send-verification - Send or resend verification email
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { email, password, firstName, lastName } = body
+    const session = await auth()
 
-    // Validate required fields
-    if (!email || !password) {
+    if (!session?.user?.email) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       )
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    // Validate password length
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      )
-    }
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    })
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 400 }
-      )
-    }
-
-    // Hash password
-    const hashedPassword = await hash(password, 12)
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        role: 'USER',
-      },
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
       select: {
         id: true,
         email: true,
+        emailVerified: true,
         firstName: true,
         lastName: true,
-        role: true,
-        createdAt: true,
       },
     })
 
-    // Generate verification token
-    const verificationToken = randomBytes(32).toString('hex')
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      )
+    }
 
-    // Create verification token
+    // Check if already verified
+    if (user.emailVerified) {
+      return NextResponse.json(
+        { success: false, error: 'Email is already verified' },
+        { status: 400 }
+      )
+    }
+
+    // Generate verification token (32 bytes = 64 hex characters)
+    const verificationToken = randomBytes(32).toString('hex')
+
+    // Token expires in 24 hours
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+    // Invalidate any existing tokens for this email
+    await prisma.verificationToken.deleteMany({
+      where: {
+        identifier: user.email,
+      },
+    })
+
+    // Create new verification token
     await prisma.verificationToken.create({
       data: {
         identifier: user.email,
@@ -85,7 +69,7 @@ export async function POST(request: Request) {
 
     // Send verification email
     // TODO: Integrate with email service (Resend, SendGrid, etc.)
-    console.log('Verification email for new user:', {
+    console.log('Email verification requested:', {
       email: user.email,
       verificationUrl,
       expiresAt,
@@ -123,13 +107,14 @@ export async function POST(request: Request) {
           </head>
           <body>
             <div class="container">
-              <h2>Welcome to Radio Ads You Missed!</h2>
+              <h2>Verify Your Email Address</h2>
               <p>Hi ${user.firstName || 'there'},</p>
               <p>Thank you for signing up! Please verify your email address by clicking the button below:</p>
               <a href="${verificationUrl}" class="button">Verify Email</a>
               <p>Or copy and paste this link into your browser:</p>
               <p>${verificationUrl}</p>
               <p>This link will expire in 24 hours.</p>
+              <p>If you didn't create an account, you can safely ignore this email.</p>
               <div class="footer">
                 <p>Radio Ads You Missed</p>
               </div>
@@ -142,14 +127,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'User created successfully. Please check your email to verify your account.',
-      user,
-      verificationRequired: true,
+      message: 'Verification email has been sent. Please check your inbox.',
     })
   } catch (error) {
-    console.error('Signup error:', error)
+    console.error('Error sending verification email:', error)
     return NextResponse.json(
-      { error: 'Failed to create user' },
+      { success: false, error: 'Failed to send verification email' },
       { status: 500 }
     )
   }
