@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   FiSearch, FiTrendingUp, FiRadio, FiUsers,
-  FiMenu, FiX
+  FiMenu, FiX, FiShield
 } from 'react-icons/fi'
 
 export default function Navbar() {
@@ -82,15 +82,29 @@ export default function Navbar() {
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
             {session ? (
-              <Link href="/dashboard">
-                <motion.button
-                  className="px-6 py-2 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm hover:bg-[#00d4ff]/10 transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Dashboard
-                </motion.button>
-              </Link>
+              <>
+                <Link href="/dashboard">
+                  <motion.button
+                    className="px-6 py-2 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm hover:bg-[#00d4ff]/10 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Dashboard
+                  </motion.button>
+                </Link>
+                {(session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN') && (
+                  <Link href="/admin">
+                    <motion.button
+                      className="px-4 py-2 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold text-sm hover:opacity-90 transition-all flex items-center gap-2"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FiShield className="text-sm" />
+                      Admin
+                    </motion.button>
+                  </Link>
+                )}
+              </>
             ) : (
               <>
                 <Link href="/auth/signin">
@@ -158,14 +172,27 @@ export default function Navbar() {
               <div className="border-t border-[#1a1f2e] my-2" />
 
               {session ? (
-                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <motion.button
-                    className="w-full px-6 py-3 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Dashboard
-                  </motion.button>
-                </Link>
+                <div className="space-y-2">
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <motion.button
+                      className="w-full px-6 py-3 rounded-full text-[#00d4ff] border-2 border-[#00d4ff] font-semibold text-sm"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Dashboard
+                    </motion.button>
+                  </Link>
+                  {(session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN') && (
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                      <motion.button
+                        className="w-full px-6 py-3 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-sm flex items-center justify-center gap-2"
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FiShield />
+                        Admin Panel
+                      </motion.button>
+                    </Link>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-2">
                   <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
@@ -184,6 +211,18 @@ export default function Navbar() {
                       Get Started
                     </motion.button>
                   </Link>
+
+                  <div className="pt-2 border-t border-[#1a1f2e]/50 mt-2">
+                    <Link href="/admin/auth/signin" onClick={() => setMobileMenuOpen(false)}>
+                      <motion.button
+                        className="w-full px-4 py-2 rounded-lg text-[#94a3b8] hover:text-white text-xs flex items-center justify-center gap-2 hover:bg-[#1a1f2e]/50"
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <FiShield className="text-sm" />
+                        Admin Access
+                      </motion.button>
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
