@@ -5,11 +5,6 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FiRadio, FiMapPin, FiExternalLink, FiPlay } from 'react-icons/fi'
 import Link from 'next/link'
-import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
-import FloatingParticles from '@/components/effects/FloatingParticles'
-import MorphingBlob from '@/components/ui/MorphingBlob'
-import HolographicText from '@/components/ui/HolographicText'
-import MagneticButton from '@/components/ui/MagneticButton'
 
 interface Station {
   id: string
@@ -59,58 +54,48 @@ export default function StationsPage() {
   const locations = Array.from(new Set(stations.map(s => s.location)))
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated background */}
-      <FloatingParticles count={50} />
-      <MorphingBlob className="top-0 right-0" color="from-blue-500 to-cyan-500" size={600} />
-      <MorphingBlob className="bottom-0 left-0" color="from-purple-500 to-pink-500" size={500} />
+    <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
+
+      {/* Atmospheric glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/10 rounded-full blur-[120px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <motion.div
-            className="text-8xl mb-6"
-            animate={{
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: 'easeInOut'
-            }}
-          >
-            📻
-          </motion.div>
-
-          <HolographicText as="h1" className="text-6xl mb-4">
-            Radio Stations
-          </HolographicText>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+            Radio{' '}
+            <span className="bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+              Stations
+            </span>
+          </h1>
+          <p className="text-xl text-[#94a3b8] max-w-2xl mx-auto">
             Explore New Zealand's top radio stations and discover their latest advertisements
           </p>
         </motion.div>
 
         {/* Location Filter */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <GlassmorphicCard className="p-6">
+          <div className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e]">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-white font-semibold">Filter by Location:</span>
               <button
                 onClick={() => setSelectedLocation('all')}
                 className={`px-4 py-2 rounded-full transition-all ${
                   selectedLocation === 'all'
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    ? 'bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-white'
+                    : 'bg-[#0a0f1e] text-[#94a3b8] hover:border-[#00d4ff] hover:text-[#00d4ff] border border-[#2a2f3e]'
                 }`}
               >
                 All Locations
@@ -121,15 +106,15 @@ export default function StationsPage() {
                   onClick={() => setSelectedLocation(location)}
                   className={`px-4 py-2 rounded-full transition-all ${
                     selectedLocation === location
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                      ? 'bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-white'
+                      : 'bg-[#0a0f1e] text-[#94a3b8] hover:border-[#00d4ff] hover:text-[#00d4ff] border border-[#2a2f3e]'
                   }`}
                 >
                   {location}
                 </button>
               ))}
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
 
         {/* Stations Grid */}
@@ -141,9 +126,8 @@ export default function StationsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-              >
-                <GlassmorphicCard className="h-80 animate-pulse" />
-              </motion.div>
+                className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] h-80 animate-pulse"
+              />
             ))}
           </div>
         ) : (
@@ -155,9 +139,9 @@ export default function StationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <GlassmorphicCard className="group cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300 h-full">
+                <div className="bg-[#1a1f2e] rounded-2xl border border-[#2a2f3e] group cursor-pointer overflow-hidden hover:scale-105 hover:border-[#00d4ff]/50 transition-all duration-300 h-full">
                   {/* Station Header */}
-                  <div className="relative h-48 bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 animate-gradient-xy flex items-center justify-center">
+                  <div className="relative h-48 bg-gradient-to-br from-[#00d4ff] via-[#ff1b6b] to-[#ff6b00] animate-gradient-xy flex items-center justify-center">
                     {station.logoUrl ? (
                       <img
                         src={station.logoUrl}
@@ -188,33 +172,33 @@ export default function StationsPage() {
 
                   {/* Station Content */}
                   <div className="p-6">
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-500 group-hover:to-purple-500 transition-all">
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#00d4ff] group-hover:to-[#00ff88] transition-all">
                       {station.name}
                     </h3>
 
                     {/* Location */}
-                    <div className="flex items-center gap-2 text-gray-300 mb-3">
-                      <FiMapPin className="text-purple-400" />
+                    <div className="flex items-center gap-2 text-[#94a3b8] mb-3">
+                      <FiMapPin className="text-[#00d4ff]" />
                       <span>{station.location}</span>
                     </div>
 
                     {/* Description */}
                     {station.description && (
-                      <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                      <p className="text-sm text-[#94a3b8] mb-4 line-clamp-2">
                         {station.description}
                       </p>
                     )}
 
                     {/* Stats */}
-                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#2a2f3e]">
                       <div className="flex items-center gap-2">
-                        <FiPlay className="text-green-400" />
+                        <FiPlay className="text-[#00ff88]" />
                         <span className="text-white font-semibold">
                           {station._count?.ads || 0} ads
                         </span>
                       </div>
                       {station.active && (
-                        <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold">
+                        <span className="px-3 py-1 rounded-full bg-[#00ff88]/20 text-[#00ff88] text-xs font-bold">
                           ACTIVE
                         </span>
                       )}
@@ -226,7 +210,7 @@ export default function StationsPage() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+                          className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold hover:shadow-lg transition-all"
                         >
                           View Ads
                         </motion.button>
@@ -239,14 +223,14 @@ export default function StationsPage() {
                           rel="noopener noreferrer"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="p-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
+                          className="p-3 rounded-xl bg-[#0a0f1e] border border-[#2a2f3e] text-white hover:border-[#00d4ff] transition-all"
                         >
                           <FiExternalLink className="text-xl" />
                         </motion.a>
                       )}
                     </div>
                   </div>
-                </GlassmorphicCard>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -255,50 +239,47 @@ export default function StationsPage() {
         {/* Empty State */}
         {!loading && stations.length === 0 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             className="text-center py-20"
           >
-            <GlassmorphicCard className="inline-block p-12">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                className="text-8xl mb-6"
-              >
-                📻
-              </motion.div>
+            <div className="bg-[#1a1f2e] rounded-2xl p-12 border border-[#2a2f3e] inline-block">
+              <div className="text-8xl mb-6">📻</div>
               <h3 className="text-2xl font-bold text-white mb-2">
                 No stations found
               </h3>
-              <p className="text-gray-400">
+              <p className="text-[#94a3b8]">
                 Try adjusting your filters
               </p>
-            </GlassmorphicCard>
+            </div>
           </motion.div>
         )}
 
         {/* CTA Section */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-20"
+          className="mt-16"
         >
-          <GlassmorphicCard className="p-12 text-center">
-            <HolographicText as="h2" className="text-4xl mb-4">
+          <div className="bg-[#1a1f2e] rounded-2xl p-12 border border-[#2a2f3e] text-center">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Discover Amazing Offers
-            </HolographicText>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            </h2>
+            <p className="text-xl text-[#94a3b8] mb-8 max-w-2xl mx-auto">
               Browse ads from your favorite stations and never miss a great deal
             </p>
             <Link href="/search">
-              <MagneticButton className="px-12 py-6">
-                <FiRadio className="mr-2 text-2xl" />
-                <span className="text-xl">Browse All Ads</span>
-              </MagneticButton>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-10 py-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold text-lg inline-flex items-center gap-3"
+              >
+                <FiRadio className="text-xl" />
+                Browse All Ads
+              </motion.button>
             </Link>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
       </div>
     </div>

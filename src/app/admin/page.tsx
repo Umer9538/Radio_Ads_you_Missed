@@ -1,17 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   FiUsers, FiRadio, FiPlayCircle, FiGift, FiTrendingUp,
-  FiPlus, FiEdit, FiTrash2, FiEye
+  FiPlus, FiEdit, FiTrash2, FiEye, FiGrid
 } from 'react-icons/fi'
 import Link from 'next/link'
-import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
-import FloatingParticles from '@/components/effects/FloatingParticles'
-import MorphingBlob from '@/components/ui/MorphingBlob'
-import HolographicText from '@/components/ui/HolographicText'
-import MagneticButton from '@/components/ui/MagneticButton'
 
 interface AdminStats {
   totalUsers: number
@@ -23,6 +20,8 @@ interface AdminStats {
 }
 
 export default function AdminDashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalAds: 0,
@@ -35,37 +34,37 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchAdminData()
-  }, [])
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/admin')
+    } else if (status === 'authenticated') {
+      // Check if user is admin
+      if (session?.user?.role !== 'ADMIN') {
+        router.push('/dashboard')
+      } else {
+        fetchAdminData()
+      }
+    }
+  }, [status, session, router])
 
   const fetchAdminData = async () => {
     try {
       setLoading(true)
 
-      // Fetch various data
-      const [adsRes, stationsRes] = await Promise.all([
-        fetch('/api/ads?limit=10'),
-        fetch('/api/stations')
+      // Fetch admin stats and recent ads
+      const [statsRes, adsRes] = await Promise.all([
+        fetch('/api/admin/stats'),
+        fetch('/api/ads?limit=10')
       ])
 
+      const statsData = await statsRes.json()
       const adsData = await adsRes.json()
-      const stationsData = await stationsRes.json()
+
+      if (statsData.success) {
+        setStats(statsData.data)
+      }
 
       if (adsData.success) {
         setRecentAds(adsData.data)
-
-        // Calculate stats
-        const totalPlays = adsData.data.reduce((sum: number, ad: any) => sum + ad.playCount, 0)
-        const totalOffers = adsData.data.reduce((sum: number, ad: any) => sum + (ad.offers?.length || 0), 0)
-
-        setStats({
-          totalUsers: 2, // From seed data
-          totalAds: adsData.data.length,
-          totalStations: stationsData.success ? stationsData.data.length : 0,
-          totalOffers,
-          totalPlays,
-          totalClaims: 0 // Would come from claims API
-        })
       }
     } catch (error) {
       console.error('Error fetching admin data:', error)
@@ -79,81 +78,86 @@ export default function AdminDashboardPage() {
       icon: FiUsers,
       label: 'Total Users',
       value: stats.totalUsers,
-      color: 'from-blue-500 to-cyan-500',
-      change: '+12%'
+      color: '#00d4ff'
     },
     {
       icon: FiPlayCircle,
       label: 'Total Ads',
       value: stats.totalAds,
-      color: 'from-purple-500 to-pink-500',
-      change: '+8%'
+      color: '#ff1b6b'
     },
     {
       icon: FiRadio,
       label: 'Radio Stations',
       value: stats.totalStations,
-      color: 'from-green-500 to-emerald-500',
-      change: '+2%'
+      color: '#00ff88'
     },
     {
       icon: FiGift,
       label: 'Active Offers',
       value: stats.totalOffers,
-      color: 'from-orange-500 to-red-500',
-      change: '+15%'
+      color: '#ff6b00'
     },
     {
       icon: FiTrendingUp,
       label: 'Total Plays',
       value: stats.totalPlays,
-      color: 'from-indigo-500 to-purple-500',
-      change: '+25%'
+      color: '#8b5cf6'
     },
     {
-      icon: FiGift,
+      icon: FiGrid,
       label: 'Offers Claimed',
       value: stats.totalClaims,
-      color: 'from-pink-500 to-rose-500',
-      change: '+18%'
+      color: '#00d4ff'
     }
   ]
 
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1e] flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated background */}
-      <FloatingParticles count={50} />
-      <MorphingBlob className="top-0 right-0" color="from-blue-500 to-cyan-500" size={600} />
-      <MorphingBlob className="bottom-0 left-0" color="from-purple-500 to-pink-500" size={500} />
+    <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1e] via-[#0a0f1e]/50 to-[#0a0f1e]" />
+
+      {/* Atmospheric glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#00d4ff]/10 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#ff1b6b]/10 rounded-full blur-[120px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <HolographicText as="h1" className="text-5xl mb-2">
-                Admin Dashboard
-              </HolographicText>
-              <p className="text-xl text-gray-300">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+                Admin{' '}
+                <span className="bg-gradient-to-r from-[#00d4ff] to-[#00ff88] bg-clip-text text-transparent">
+                  Dashboard
+                </span>
+              </h1>
+              <p className="text-xl text-[#94a3b8]">
                 Manage your radio ads platform
               </p>
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/admin/ads/new">
-                <MagneticButton>
-                  <FiPlus className="mr-2" />
-                  Add New Ad
-                </MagneticButton>
-              </Link>
-            </motion.div>
+            <Link href="/dashboard">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold"
+              >
+                Back to Dashboard
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
 
@@ -162,104 +166,94 @@ export default function AdminDashboardPage() {
           {statCards.map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="bg-[#1a1f2e] rounded-2xl p-6 border border-[#2a2f3e] hover:border-[#00d4ff]/50 transition-all"
             >
-              <GlassmorphicCard className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <motion.div
-                    className={`p-3 rounded-full bg-gradient-to-br ${stat.color}`}
-                    whileHover={{ scale: 1.1, rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <stat.icon className="text-2xl text-white" />
-                  </motion.div>
-                  <span className="text-green-400 text-sm font-semibold">
-                    {stat.change}
-                  </span>
-                </div>
-
-                <motion.div
-                  className="text-4xl font-bold text-white mb-2"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 200 }}
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="p-3 rounded-xl"
+                  style={{ backgroundColor: `${stat.color}20` }}
                 >
-                  {stat.value}
-                </motion.div>
-                <div className="text-gray-300">{stat.label}</div>
-              </GlassmorphicCard>
+                  <stat.icon className="text-2xl" style={{ color: stat.color }} />
+                </div>
+              </div>
+
+              <div className="text-4xl font-bold text-white mb-2">
+                {stat.value}
+              </div>
+              <div className="text-[#94a3b8]">{stat.label}</div>
             </motion.div>
           ))}
         </div>
 
         {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
           className="mb-12"
         >
-          <GlassmorphicCard className="p-8">
+          <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
             <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Link href="/admin/ads">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link href="/search">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+                  className="w-full p-4 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold hover:shadow-lg transition-all"
                 >
-                  Manage Ads
+                  View All Ads
                 </motion.button>
               </Link>
 
-              <Link href="/admin/stations">
+              <Link href="/stations">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all"
+                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all"
                 >
-                  Manage Stations
+                  View Stations
                 </motion.button>
               </Link>
 
-              <Link href="/admin/users">
+              <Link href="/categories">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold hover:shadow-lg hover:shadow-green-500/50 transition-all"
+                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all"
                 >
-                  Manage Users
+                  View Categories
                 </motion.button>
               </Link>
 
-              <Link href="/admin/offers">
+              <Link href="/profile">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all"
+                  className="w-full p-4 rounded-xl border-2 border-[#8b5cf6] text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/10 transition-all"
                 >
-                  Manage Offers
+                  View Profile
                 </motion.button>
               </Link>
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
 
         {/* Recent Ads Table */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
           <div className="flex items-center justify-between mb-6">
-            <HolographicText as="h2" className="text-3xl">
+            <h2 className="text-3xl font-bold text-white">
               Recent Advertisements
-            </HolographicText>
+            </h2>
           </div>
 
-          <GlassmorphicCard className="overflow-hidden">
+          <div className="bg-[#1a1f2e] rounded-2xl border border-[#2a2f3e] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -273,13 +267,7 @@ export default function AdminDashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={6} className="p-8 text-center text-gray-400">
-                        Loading...
-                      </td>
-                    </tr>
-                  ) : recentAds.length > 0 ? (
+                  {recentAds.length > 0 ? (
                     recentAds.map((ad, index) => (
                       <motion.tr
                         key={ad.id}
@@ -295,8 +283,8 @@ export default function AdminDashboardPage() {
                         <td className="p-4">
                           <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                             ad.status === 'PUBLISHED'
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-yellow-500/20 text-yellow-400'
+                              ? 'bg-[#00ff88]/20 text-[#00ff88]'
+                              : 'bg-[#ff6b00]/20 text-[#ff6b00]'
                           }`}>
                             {ad.status}
                           </span>
@@ -307,34 +295,18 @@ export default function AdminDashboardPage() {
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
-                                className="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+                                className="p-2 rounded-lg bg-[#00d4ff]/20 text-[#00d4ff] hover:bg-[#00d4ff]/30"
                               >
                                 <FiEye />
                               </motion.button>
                             </Link>
-                            <Link href={`/admin/ads/${ad.id}/edit`}>
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className="p-2 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
-                              >
-                                <FiEdit />
-                              </motion.button>
-                            </Link>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                            >
-                              <FiTrash2 />
-                            </motion.button>
                           </div>
                         </td>
                       </motion.tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-gray-400">
+                      <td colSpan={6} className="p-8 text-center text-[#94a3b8]">
                         No ads found
                       </td>
                     </tr>
@@ -342,7 +314,7 @@ export default function AdminDashboardPage() {
                 </tbody>
               </table>
             </div>
-          </GlassmorphicCard>
+          </div>
         </motion.div>
       </div>
     </div>

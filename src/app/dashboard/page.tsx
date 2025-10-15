@@ -55,22 +55,22 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
-      // For now, use mock data since user auth isn't fully configured
-      // In production, this would fetch real user data from API
 
-      // Mock stats
-      setStats({
-        favoritesCount: 12,
-        playHistoryCount: 45,
-        claimedOffersCount: 8,
-        searchCount: 23
-      })
+      // Fetch user stats and recent ads in parallel
+      const [statsResponse, adsResponse] = await Promise.all([
+        fetch('/api/user/stats'),
+        fetch('/api/ads?limit=6')
+      ])
 
-      // Fetch recent ads
-      const response = await fetch('/api/ads?limit=6')
-      const data = await response.json()
-      if (data.success) {
-        setRecentAds(data.data)
+      const statsData = await statsResponse.json()
+      const adsData = await adsResponse.json()
+
+      if (statsData.success) {
+        setStats(statsData.data)
+      }
+
+      if (adsData.success) {
+        setRecentAds(adsData.data)
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
