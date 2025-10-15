@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
       router.push('/auth/signin?callbackUrl=/admin')
     } else if (status === 'authenticated') {
       // Check if user is admin
-      if (session?.user?.role !== 'ADMIN') {
+      if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'SUPER_ADMIN') {
         router.push('/dashboard')
       } else {
         fetchAdminData()
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
   }, [status, session, router])
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
+    if (status === 'authenticated' && (session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN')) {
       fetchAds(currentPage)
     }
   }, [currentPage])
