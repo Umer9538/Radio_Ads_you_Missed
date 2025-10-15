@@ -32,9 +32,9 @@ export default function AnalyticsDashboardPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin/analytics')
+      router.push('/admin/auth/signin?callbackUrl=/admin/analytics')
     } else if (status === 'authenticated') {
-      if (session?.user?.role !== 'ADMIN') {
+      if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'SUPER_ADMIN') {
         router.push('/dashboard')
       } else {
         fetchAnalytics()

@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin')
+      router.push('/admin/auth/signin?callbackUrl=/admin')
     } else if (status === 'authenticated') {
       // Check if user is admin
       if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'SUPER_ADMIN') {

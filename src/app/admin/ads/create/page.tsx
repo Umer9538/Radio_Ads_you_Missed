@@ -42,7 +42,7 @@ export default function CreateAdPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin/ads/create')
+      router.push('/admin/auth/signin?callbackUrl=/admin/ads/create')
     } else if (status === 'authenticated') {
       if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'SUPER_ADMIN') {
         router.push('/dashboard')
