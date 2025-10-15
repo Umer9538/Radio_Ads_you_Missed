@@ -231,7 +231,19 @@ export default function AdminDashboardPage() {
           className="mb-12"
         >
           <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
-            <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Quick Actions</h2>
+              <Link href="/admin/ads/create">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#00d4ff] to-[#00ff88] text-white font-bold hover:shadow-lg hover:shadow-[#00d4ff]/50 transition-all"
+                >
+                  <FiPlus className="text-xl" />
+                  Create New Ad
+                </motion.button>
+              </Link>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link href="/admin/analytics">
                 <motion.button
