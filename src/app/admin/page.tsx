@@ -233,11 +233,21 @@ export default function AdminDashboardPage() {
           <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
             <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link href="/search">
+              <Link href="/admin/analytics">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-full p-4 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold hover:shadow-lg transition-all"
+                >
+                  Analytics Dashboard
+                </motion.button>
+              </Link>
+
+              <Link href="/search">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all"
                 >
                   View All Ads
                 </motion.button>
@@ -247,7 +257,7 @@ export default function AdminDashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all"
+                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all"
                 >
                   View Stations
                 </motion.button>
@@ -257,19 +267,9 @@ export default function AdminDashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all"
-                >
-                  View Categories
-                </motion.button>
-              </Link>
-
-              <Link href="/profile">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                   className="w-full p-4 rounded-xl border-2 border-[#8b5cf6] text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/10 transition-all"
                 >
-                  View Profile
+                  View Categories
                 </motion.button>
               </Link>
             </div>
