@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
+import { auth } from '@/lib/auth'
 
 // GET /api/claims/[id] - Get a specific claim
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -16,8 +16,9 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const claim = await prisma.claim.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         offer: {
           include: {
@@ -81,10 +82,10 @@ export async function GET(
 // PATCH /api/claims/[id] - Mark claim as redeemed
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -92,6 +93,7 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await request.json()
     const { redeemed } = body
 
@@ -104,7 +106,7 @@ export async function PATCH(
 
     // Find the claim and verify ownership
     const existingClaim = await prisma.claim.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: { email: true },
@@ -128,7 +130,7 @@ export async function PATCH(
 
     // Update the claim
     const updatedClaim = await prisma.claim.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         redeemed,
         redeemedAt: redeemed ? new Date() : null,
@@ -167,10 +169,10 @@ export async function PATCH(
 // DELETE /api/claims/[id] - Delete a claim (if user wants to unclaim)
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -178,9 +180,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+
     // Find the claim and verify ownership
     const existingClaim = await prisma.claim.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: { email: true },
@@ -206,7 +210,7 @@ export async function DELETE(
     // Delete claim and decrement offer claim count in a transaction
     await prisma.$transaction(async (tx) => {
       await tx.claim.delete({
-        where: { id: params.id },
+        where: { id },
       })
 
       // Decrement offer claim count

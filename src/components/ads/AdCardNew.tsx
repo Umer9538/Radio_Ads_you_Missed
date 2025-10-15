@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { FiPlay, FiHeart, FiMapPin, FiClock, FiRadio } from 'react-icons/fi'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { showToast, TOAST_MESSAGES } from '@/utils/toast'
 
 interface AdCardProps {
   ad: {
@@ -65,6 +66,7 @@ export default function AdCardNew({ ad }: AdCardProps) {
   const toggleFavorite = async () => {
     // Redirect to sign in if not authenticated
     if (status === 'unauthenticated') {
+      showToast.error('Please sign in to save favorites')
       router.push(`/auth/signin?callbackUrl=${window.location.pathname}`)
       return
     }
@@ -83,6 +85,9 @@ export default function AdCardNew({ ad }: AdCardProps) {
         const data = await response.json()
         if (data.success) {
           setIsFavorite(false)
+          showToast.success(TOAST_MESSAGES.FAVORITE_REMOVED)
+        } else {
+          showToast.error(data.error || 'Failed to remove from favorites')
         }
       } else {
         // Add to favorites
@@ -97,10 +102,14 @@ export default function AdCardNew({ ad }: AdCardProps) {
         const data = await response.json()
         if (data.success) {
           setIsFavorite(true)
+          showToast.success(TOAST_MESSAGES.FAVORITE_ADDED)
+        } else {
+          showToast.error(data.error || 'Failed to add to favorites')
         }
       }
     } catch (error) {
       console.error('Error toggling favorite:', error)
+      showToast.error(TOAST_MESSAGES.GENERIC_ERROR)
     } finally {
       setIsFavoriteLoading(false)
     }

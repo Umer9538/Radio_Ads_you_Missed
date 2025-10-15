@@ -10,6 +10,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import SignOutButton from '@/components/auth/SignOutButton'
+import { showToast, TOAST_MESSAGES } from '@/utils/toast'
 
 interface UserProfile {
   firstName: string
@@ -35,8 +36,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
 
   const [profile, setProfile] = useState<UserProfile>({
     firstName: '',
@@ -105,11 +104,11 @@ export default function ProfilePage() {
           confirmPassword: ''
         })
       } else {
-        setError('Failed to load profile')
+        showToast.error('Failed to load profile')
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
-      setError('Failed to load profile')
+      showToast.error('Failed to load profile')
     } finally {
       setLoading(false)
     }
@@ -132,8 +131,6 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     try {
       setSaving(true)
-      setError('')
-      setSuccessMessage('')
 
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
@@ -156,17 +153,14 @@ export default function ProfilePage() {
           lastName: data.data.lastName,
           email: data.data.email,
         })
-        setSuccessMessage('Profile updated successfully!')
+        showToast.success(TOAST_MESSAGES.PROFILE_UPDATED)
         setIsEditing(false)
-
-        // Clear success message after 3 seconds
-        setTimeout(() => setSuccessMessage(''), 3000)
       } else {
-        setError(data.error || 'Failed to update profile')
+        showToast.error(data.error || 'Failed to update profile')
       }
     } catch (error) {
       console.error('Error saving profile:', error)
-      setError('Failed to update profile')
+      showToast.error('Failed to update profile')
     } finally {
       setSaving(false)
     }
@@ -174,21 +168,18 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     try {
-      setError('')
-      setSuccessMessage('')
-
       if (formData.newPassword !== formData.confirmPassword) {
-        setError('Passwords do not match')
+        showToast.error('Passwords do not match')
         return
       }
 
       if (!formData.currentPassword) {
-        setError('Please enter your current password')
+        showToast.error('Please enter your current password')
         return
       }
 
       if (formData.newPassword.length < 6) {
-        setError('New password must be at least 6 characters long')
+        showToast.error('New password must be at least 6 characters long')
         return
       }
 
@@ -214,16 +205,13 @@ export default function ProfilePage() {
           newPassword: '',
           confirmPassword: ''
         })
-        setSuccessMessage('Password changed successfully!')
-
-        // Clear success message after 3 seconds
-        setTimeout(() => setSuccessMessage(''), 3000)
+        showToast.success(TOAST_MESSAGES.PASSWORD_CHANGED)
       } else {
-        setError(data.error || 'Failed to change password')
+        showToast.error(data.error || 'Failed to change password')
       }
     } catch (error) {
       console.error('Error changing password:', error)
-      setError('Failed to change password')
+      showToast.error('Failed to change password')
     } finally {
       setSaving(false)
     }
@@ -383,28 +371,6 @@ export default function ProfilePage() {
                 ) : null}
               </div>
 
-              {/* Success Message */}
-              {successMessage && activeTab === 'profile' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] text-sm"
-                >
-                  {successMessage}
-                </motion.div>
-              )}
-
-              {/* Error Message */}
-              {error && activeTab === 'profile' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
-                >
-                  {error}
-                </motion.div>
-              )}
-
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -490,28 +456,6 @@ export default function ProfilePage() {
           {activeTab === 'security' && (
             <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
               <h3 className="text-2xl font-bold text-white mb-6">Security Settings</h3>
-
-              {/* Success Message */}
-              {successMessage && activeTab === 'security' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] text-sm"
-                >
-                  {successMessage}
-                </motion.div>
-              )}
-
-              {/* Error Message */}
-              {error && activeTab === 'security' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-sm"
-                >
-                  {error}
-                </motion.div>
-              )}
 
               <div className="space-y-6">
                 <div>

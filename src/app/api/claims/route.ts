@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
+import { auth } from '@/lib/auth'
 
 // GET /api/claims - Get user's claimed offers
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
     if (!session?.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
 // POST /api/claims - Claim an offer
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession()
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

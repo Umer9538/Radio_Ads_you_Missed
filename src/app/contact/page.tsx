@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi'
+import { showToast } from '@/utils/toast'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -12,13 +13,10 @@ export default function ContactPage() {
     message: ''
   })
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
     try {
       const response = await fetch('/api/contact', {
@@ -32,14 +30,13 @@ export default function ContactPage() {
       const data = await response.json()
 
       if (data.success) {
-        setSuccess(true)
+        showToast.success('Message sent successfully! We\'ll get back to you soon.')
         setFormData({ name: '', email: '', subject: '', message: '' })
-        setTimeout(() => setSuccess(false), 5000)
       } else {
-        setError(data.error || 'Failed to send message')
+        showToast.error(data.error || 'Failed to send message')
       }
     } catch (err) {
-      setError('An error occurred while sending your message')
+      showToast.error('An error occurred while sending your message')
     } finally {
       setLoading(false)
     }
@@ -149,26 +146,6 @@ export default function ContactPage() {
         >
           <div className="bg-[#1a1f2e] rounded-2xl p-8 md:p-12 border border-[#2a2f3e]">
             <h2 className="text-3xl font-bold text-white mb-8">Send us a Message</h2>
-
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/50 text-[#00ff88]"
-              >
-                Message sent successfully! We'll get back to you soon.
-              </motion.div>
-            )}
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 rounded-xl bg-[#ff1b6b]/20 border border-[#ff1b6b]/50 text-[#ff1b6b]"
-              >
-                {error}
-              </motion.div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

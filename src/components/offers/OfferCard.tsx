@@ -106,7 +106,7 @@ export default function OfferCard({
         <div className="flex items-center gap-2">
           <FiClock className={isExpired ? 'text-red-400' : 'text-[#94a3b8]'} />
           <span className={isExpired ? 'text-red-400' : 'text-[#94a3b8]'}>
-            {formatExpiryDate(offer.expiryDate)}
+            {formatExpiryDate(offer.expiryDate ?? null)}
           </span>
         </div>
 
