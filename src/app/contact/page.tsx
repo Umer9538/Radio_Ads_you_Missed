@@ -13,19 +13,36 @@ export default function ContactPage() {
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-    setSuccess(true)
-    setFormData({ name: '', email: '', subject: '', message: '' })
-    setLoading(false)
+      const data = await response.json()
 
-    setTimeout(() => setSuccess(false), 5000)
+      if (data.success) {
+        setSuccess(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setTimeout(() => setSuccess(false), 5000)
+      } else {
+        setError(data.error || 'Failed to send message')
+      }
+    } catch (err) {
+      setError('An error occurred while sending your message')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -140,6 +157,16 @@ export default function ContactPage() {
                 className="mb-6 p-4 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/50 text-[#00ff88]"
               >
                 Message sent successfully! We'll get back to you soon.
+              </motion.div>
+            )}
+
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 rounded-xl bg-[#ff1b6b]/20 border border-[#ff1b6b]/50 text-[#ff1b6b]"
+              >
+                {error}
               </motion.div>
             )}
 
