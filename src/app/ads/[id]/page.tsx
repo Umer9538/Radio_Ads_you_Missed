@@ -404,8 +404,11 @@ export default function AdDetailPage() {
               transition={{ delay: 0.2 }}
             >
               <AudioPlayer
+                adId={ad.id}
                 audioUrl={ad.audioUrl}
                 title={`${ad.brand} - ${ad.title}`}
+                brand={ad.brand}
+                duration={ad.duration}
                 onPlay={handlePlay}
               />
             </motion.div>

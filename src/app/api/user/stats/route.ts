@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     }
 
     // Get stats in parallel
-    const [favoritesCount, claimedOffersCount] = await Promise.all([
+    const [favoritesCount, claimedOffersCount, playHistoryCount, searchCount] = await Promise.all([
       // Count favorites
       prisma.favorite.count({
         where: { userId: user.id },
@@ -37,15 +37,21 @@ export async function GET(request: Request) {
       prisma.claim.count({
         where: { userId: user.id },
       }),
+      // Count play history
+      prisma.playHistory.count({
+        where: { userId: user.id },
+      }),
+      // Count search history
+      prisma.searchHistory.count({
+        where: { userId: user.id },
+      }),
     ])
 
-    // For now, we don't have play history or search tracking
-    // These can be added when those features are implemented
     const stats = {
       favoritesCount,
-      playHistoryCount: 0, // TODO: Implement play history tracking
+      playHistoryCount,
       claimedOffersCount,
-      searchCount: 0, // TODO: Implement search history tracking
+      searchCount,
     }
 
     return NextResponse.json({

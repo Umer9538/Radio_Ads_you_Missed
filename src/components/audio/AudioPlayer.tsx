@@ -16,6 +16,7 @@ import {
 import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
 
 interface AudioPlayerProps {
+  adId: string
   audioUrl: string
   title: string
   brand?: string
@@ -28,6 +29,7 @@ interface AudioPlayerProps {
 }
 
 export default function AudioPlayer({
+  adId,
   audioUrl,
   title,
   brand,
@@ -52,6 +54,8 @@ export default function AudioPlayer({
   const [isLooping, setIsLooping] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [frequencyData, setFrequencyData] = useState<number[]>(new Array(32).fill(0))
+  const [playStartTime, setPlayStartTime] = useState<number>(0)
+  const [hasTrackedPlay, setHasTrackedPlay] = useState(false)
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -74,8 +78,15 @@ export default function AudioPlayer({
 
     const updateTime = () => setCurrentTime(audio.currentTime)
     const updateDuration = () => setDuration(audio.duration)
-    const handleEnded = () => {
+    const handleEnded = async () => {
       setIsPlaying(false)
+
+      // Track completion
+      if (playStartTime > 0) {
+        const listenDuration = Math.floor(currentTime - playStartTime)
+        await trackPlay(listenDuration, true)
+      }
+
       onEnded?.()
     }
 
@@ -117,12 +128,40 @@ export default function AudioPlayer({
     }
   }, [isPlaying])
 
+  // Track play event
+  const trackPlay = async (listenDuration?: number, completed: boolean = false) => {
+    try {
+      await fetch(`/api/ads/${adId}/play`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          duration: listenDuration,
+          completed,
+        }),
+      })
+    } catch (error) {
+      console.error('Failed to track play:', error)
+    }
+  }
+
   const togglePlay = async () => {
     if (!audioRef.current) return
 
     if (isPlaying) {
       audioRef.current.pause()
       setIsPlaying(false)
+
+      // Track pause (partial play)
+      if (playStartTime > 0 && !hasTrackedPlay) {
+        const listenDuration = Math.floor(currentTime - playStartTime)
+        if (listenDuration > 3) { // Only track if listened for more than 3 seconds
+          await trackPlay(listenDuration, false)
+          setHasTrackedPlay(true)
+        }
+      }
+
       onPause?.()
     } else {
       // Resume audio context if suspended
@@ -131,6 +170,14 @@ export default function AudioPlayer({
       }
       audioRef.current.play()
       setIsPlaying(true)
+      setPlayStartTime(currentTime)
+
+      // Track initial play if not tracked yet
+      if (!hasTrackedPlay && currentTime < 5) {
+        await trackPlay(0, false)
+        setHasTrackedPlay(true)
+      }
+
       onPlay?.()
     }
   }
