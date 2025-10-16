@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState, memo } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   FiHeart, FiClock, FiSearch, FiGift, FiUser, FiRadio,
@@ -39,6 +41,8 @@ const StatCard = memo(({ stat, index }: { stat: any; index: number }) => (
 StatCard.displayName = 'StatCard'
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     favoritesCount: 0,
     playHistoryCount: 0,
@@ -48,9 +52,20 @@ export default function DashboardPage() {
   const [recentAds, setRecentAds] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Redirect admins to admin dashboard
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    if (status === 'authenticated') {
+      if (session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN') {
+        router.push('/admin')
+      }
+    }
+  }, [status, session, router])
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.role === 'USER') {
+      fetchDashboardData()
+    }
+  }, [status, session])
 
   const fetchDashboardData = async () => {
     try {
@@ -109,6 +124,15 @@ export default function DashboardPage() {
       link: '/dashboard/searches'
     }
   ]
+
+  // Show loading while checking auth/redirecting
+  if (status === 'loading' || (status === 'authenticated' && (session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN'))) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1e] flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0f1e] pt-20 relative overflow-hidden">
