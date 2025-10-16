@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   FiUsers, FiRadio, FiPlayCircle, FiGift, FiTrendingUp,
-  FiPlus, FiEdit, FiTrash2, FiEye, FiGrid
+  FiPlus, FiEdit, FiTrash2, FiEye, FiGrid, FiLogOut, FiBarChart2, FiList
 } from 'react-icons/fi'
 import Link from 'next/link'
 import Pagination from '@/components/ui/Pagination'
@@ -184,15 +184,17 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
-            <Link href="/dashboard">
+            <div className="flex items-center gap-3">
               <motion.button
+                onClick={() => signOut({ callbackUrl: '/admin/auth/signin' })}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-bold"
+                className="px-6 py-3 rounded-full border-2 border-red-500 text-red-500 font-bold hover:bg-red-500/10 transition-all flex items-center gap-2"
               >
-                Back to Dashboard
+                <FiLogOut />
+                Sign Out
               </motion.button>
-            </Link>
+            </div>
           </div>
         </motion.div>
 
@@ -232,7 +234,7 @@ export default function AdminDashboardPage() {
         >
           <div className="bg-[#1a1f2e] rounded-2xl p-8 border border-[#2a2f3e]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Quick Actions</h2>
+              <h2 className="text-2xl font-bold text-white">Admin Actions</h2>
               <Link href="/admin/ads/create">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -244,46 +246,39 @@ export default function AdminDashboardPage() {
                 </motion.button>
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <Link href="/admin/analytics">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold hover:shadow-lg transition-all"
+                  className="w-full p-4 rounded-xl bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                 >
+                  <FiBarChart2 />
                   Analytics Dashboard
                 </motion.button>
               </Link>
 
-              <Link href="/search">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all"
-                >
-                  View All Ads
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-50"
+                disabled
+              >
+                <FiRadio />
+                Manage Stations
+                <span className="text-xs">(Coming Soon)</span>
+              </motion.button>
 
-              <Link href="/stations">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all"
-                >
-                  View Stations
-                </motion.button>
-              </Link>
-
-              <Link href="/categories">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full p-4 rounded-xl border-2 border-[#8b5cf6] text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/10 transition-all"
-                >
-                  View Categories
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-50"
+                disabled
+              >
+                <FiGrid />
+                Manage Categories
+                <span className="text-xs">(Coming Soon)</span>
+              </motion.button>
             </div>
           </div>
         </motion.div>
