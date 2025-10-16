@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fi'
 import Link from 'next/link'
 import Pagination from '@/components/ui/Pagination'
+import toast from 'react-hot-toast'
 
 interface AdminStats {
   totalUsers: number
@@ -106,6 +107,30 @@ export default function AdminDashboardPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleDeleteAd = async (ad: any) => {
+    if (!confirm(`Are you sure you want to delete "${ad.title}"? This cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/ads/${ad.id}`, {
+        method: 'DELETE'
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to delete ad')
+      }
+
+      toast.success('Ad deleted successfully!')
+      fetchAds(currentPage)
+    } catch (error: any) {
+      console.error('Error deleting ad:', error)
+      toast.error(error.message || 'Failed to delete ad')
+    }
   }
 
   const statCards = [
@@ -246,7 +271,7 @@ export default function AdminDashboardPage() {
                 </motion.button>
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link href="/admin/analytics">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -258,27 +283,38 @@ export default function AdminDashboardPage() {
                 </motion.button>
               </Link>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-50"
-                disabled
-              >
-                <FiRadio />
-                Manage Stations
-                <span className="text-xs">(Coming Soon)</span>
-              </motion.button>
+              <Link href="/admin/users">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full p-4 rounded-xl border-2 border-[#8b5cf6] text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <FiUsers />
+                  Manage Users
+                </motion.button>
+              </Link>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all flex items-center justify-center gap-2 cursor-not-allowed opacity-50"
-                disabled
-              >
-                <FiGrid />
-                Manage Categories
-                <span className="text-xs">(Coming Soon)</span>
-              </motion.button>
+              <Link href="/admin/stations">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full p-4 rounded-xl border-2 border-[#00d4ff] text-[#00d4ff] font-semibold hover:bg-[#00d4ff]/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <FiRadio />
+                  Manage Stations
+                </motion.button>
+              </Link>
+
+              <Link href="/admin/categories">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full p-4 rounded-xl border-2 border-[#00ff88] text-[#00ff88] font-semibold hover:bg-[#00ff88]/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <FiGrid />
+                  Manage Categories
+                </motion.button>
+              </Link>
             </div>
           </div>
         </motion.div>
@@ -343,10 +379,30 @@ export default function AdminDashboardPage() {
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 className="p-2 rounded-lg bg-[#00d4ff]/20 text-[#00d4ff] hover:bg-[#00d4ff]/30"
+                                title="View"
                               >
                                 <FiEye />
                               </motion.button>
                             </Link>
+                            <Link href={`/admin/ads/edit/${ad.id}`}>
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="p-2 rounded-lg bg-[#00ff88]/20 text-[#00ff88] hover:bg-[#00ff88]/30"
+                                title="Edit"
+                              >
+                                <FiEdit />
+                              </motion.button>
+                            </Link>
+                            <motion.button
+                              onClick={() => handleDeleteAd(ad)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="p-2 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500/30"
+                              title="Delete"
+                            >
+                              <FiTrash2 />
+                            </motion.button>
                           </div>
                         </td>
                       </motion.tr>
