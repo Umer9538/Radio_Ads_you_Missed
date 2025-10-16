@@ -82,7 +82,55 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async signIn({ user, account, profile }) {
+      // Handle Google OAuth sign-in
+      if (account?.provider === "google") {
+        const prisma = (await import("@/lib/prisma")).default
+
+        try {
+          // Check if user exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+          })
+
+          if (existingUser) {
+            // Update existing user
+            await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                image: user.image,
+                emailVerified: new Date(),
+                lastLogin: new Date(),
+              },
+            })
+            // Set user id and role for JWT
+            user.id = existingUser.id
+            user.role = existingUser.role
+          } else {
+            // Create new user from Google OAuth
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                firstName: profile?.given_name || user.name?.split(' ')[0] || '',
+                lastName: profile?.family_name || user.name?.split(' ').slice(1).join(' ') || '',
+                image: user.image,
+                emailVerified: new Date(),
+                role: 'USER',
+                lastLogin: new Date(),
+              },
+            })
+            user.id = newUser.id
+            user.role = newUser.role
+          }
+        } catch (error) {
+          console.error('Error handling Google sign-in:', error)
+          return false
+        }
+      }
+
+      return true
+    },
+    async jwt({ token, user, trigger, session, account }) {
       if (user) {
         token.id = user.id
         token.role = user.role
@@ -105,12 +153,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   events: {
-    async signIn({ user, isNewUser }) {
-      if (isNewUser) {
-        // Dynamic import to avoid Edge Runtime issues
+    async signIn({ user, account }) {
+      // Only update last login for non-Google users (Google handled in callback)
+      if (account?.provider !== "google") {
         const prisma = (await import("@/lib/prisma")).default
 
-        // Handle new user registration
         await prisma.user.update({
           where: { id: user.id! },
           data: { lastLogin: new Date() },
