@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   FiTrendingUp, FiUsers, FiPlay, FiGift, FiDownload,
-  FiCalendar, FiBarChart2, FiPieChart
+  FiCalendar, FiBarChart2, FiPieChart, FiLogOut
 } from 'react-icons/fi'
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
@@ -128,7 +128,7 @@ export default function AnalyticsDashboardPage() {
               <p className="text-[#94a3b8]">Comprehensive insights and metrics</p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <Link href="/admin">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -138,6 +138,15 @@ export default function AnalyticsDashboardPage() {
                   Back to Admin
                 </motion.button>
               </Link>
+              <motion.button
+                onClick={() => signOut({ callbackUrl: '/admin/auth/signin' })}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-lg border-2 border-red-500 text-red-500 font-semibold hover:bg-red-500/10 transition-all flex items-center gap-2"
+              >
+                <FiLogOut />
+                Sign Out
+              </motion.button>
             </div>
           </div>
         </motion.div>
