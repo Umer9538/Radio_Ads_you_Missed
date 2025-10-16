@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi'
+import { FiMail, FiLock, FiArrowRight, FiShield } from 'react-icons/fi'
 import Link from 'next/link'
 import GlassmorphicCard from '@/components/ui/GlassmorphicCard'
 import FloatingParticles from '@/components/effects/FloatingParticles'
@@ -258,6 +258,24 @@ export default function SignInPage() {
               Sign up
             </Link>
           </p>
+        </motion.div>
+
+        {/* Admin Access Link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-4"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1a1f2e]/30 border border-[#2a2f3e]/50 hover:border-[#00d4ff]/50 transition-all">
+            <FiShield className="text-[#00d4ff] text-sm" />
+            <Link
+              href="/admin/auth/signin"
+              className="text-xs text-[#94a3b8] hover:text-[#00d4ff] transition-colors"
+            >
+              Admin Portal
+            </Link>
+          </div>
         </motion.div>
       </div>
     </div>
