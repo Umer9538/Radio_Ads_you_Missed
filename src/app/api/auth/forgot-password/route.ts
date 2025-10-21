@@ -91,62 +91,19 @@ export async function POST(request: Request) {
     const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`
 
     // Send email with reset link
-    // TODO: Integrate with email service (Resend, SendGrid, etc.)
-    console.log('Password reset requested:', {
-      email: user.email,
-      resetUrl,
-      expiresAt,
-    })
-
-    /*
-    Example email integration (uncomment and configure):
-
-    import { Resend } from 'resend'
-    const resend = new Resend(process.env.RESEND_API_KEY)
-
-    await resend.emails.send({
-      from: 'noreply@yourdomain.com',
-      to: user.email,
-      subject: 'Reset Your Password',
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-              .button {
-                display: inline-block;
-                padding: 12px 24px;
-                background: linear-gradient(135deg, #ff1b6b, #ff6b00);
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-                font-weight: bold;
-                margin: 20px 0;
-              }
-              .footer { margin-top: 30px; font-size: 12px; color: #666; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h2>Reset Your Password</h2>
-              <p>Hi ${user.firstName || 'there'},</p>
-              <p>You requested to reset your password. Click the button below to create a new password:</p>
-              <a href="${resetUrl}" class="button">Reset Password</a>
-              <p>Or copy and paste this link into your browser:</p>
-              <p>${resetUrl}</p>
-              <p>This link will expire in 1 hour.</p>
-              <p>If you didn't request this password reset, you can safely ignore this email.</p>
-              <div class="footer">
-                <p>Radio Ads You Missed</p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `
-    })
-    */
+    try {
+      const { sendPasswordResetEmail } = await import('@/lib/email')
+      await sendPasswordResetEmail({
+        to: user.email,
+        firstName: user.firstName || undefined,
+        resetUrl,
+      })
+      console.log('Password reset email sent to:', user.email)
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError)
+      // Don't fail the request if email fails, but log it
+      // In production, you might want to queue this for retry
+    }
 
     return NextResponse.json({
       success: true,
