@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState, memo } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
   FiHeart, FiClock, FiSearch, FiGift, FiUser, FiRadio,
-  FiGrid, FiArrowRight
+  FiGrid, FiArrowRight, FiLogOut
 } from 'react-icons/fi'
 import Link from 'next/link'
 import AdCardNew from '@/components/ads/AdCardNew'
@@ -160,15 +160,28 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <Link href="/profile">
+            <div className="flex items-center gap-3">
+              <Link href="/profile">
+                <motion.button
+                  className="p-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Profile"
+                >
+                  <FiUser className="text-2xl" />
+                </motion.button>
+              </Link>
               <motion.button
-                className="p-4 rounded-full bg-gradient-to-r from-[#ff1b6b] to-[#ff6b00] text-white"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                className="px-4 py-2 rounded-full border-2 border-red-500 text-red-500 font-semibold hover:bg-red-500/10 transition-all flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Sign Out"
               >
-                <FiUser className="text-2xl" />
+                <FiLogOut />
+                <span className="hidden md:inline">Sign Out</span>
               </motion.button>
-            </Link>
+            </div>
           </div>
         </motion.div>
 
