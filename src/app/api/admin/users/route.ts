@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export const runtime = 'nodejs'
@@ -8,7 +7,7 @@ export const runtime = 'nodejs'
 // GET /api/admin/users - Get all users with pagination
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
             select: {
               favorites: true,
               playHistory: true,
-              claimedOffers: true
+              claims: true
             }
           }
         }

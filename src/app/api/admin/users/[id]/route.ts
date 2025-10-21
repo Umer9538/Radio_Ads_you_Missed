@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export const runtime = 'nodejs'
@@ -11,7 +10,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
@@ -100,7 +99,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json(
@@ -149,8 +148,8 @@ export async function DELETE(
       prisma.playHistory.deleteMany({
         where: { userId: id }
       }),
-      // Delete user's claimed offers
-      prisma.claimedOffer.deleteMany({
+      // Delete user's claims
+      prisma.claim.deleteMany({
         where: { userId: id }
       }),
       // Delete user's search history
