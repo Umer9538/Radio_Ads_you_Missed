@@ -93,34 +93,19 @@ export async function POST(request: Request) {
       },
     })
 
-    // TODO: Send email notification to admin
-    // You can integrate an email service like Resend, SendGrid, or Nodemailer here
-    console.log('New contact submission:', {
-      id: submission.id,
-      name,
-      email,
-      subject,
-    })
-
-    /*
-    Example email integration (uncomment and configure):
-
-    import { Resend } from 'resend'
-    const resend = new Resend(process.env.RESEND_API_KEY)
-
-    await resend.emails.send({
-      from: 'notifications@yourdomain.com',
-      to: 'support@yourdomain.com',
-      subject: `New Contact Form: ${subject}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>From:</strong> ${name} (${email})</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `
-    })
-    */
+    // Send email notification to admin
+    try {
+      const { sendContactEmail } = await import('@/lib/email')
+      await sendContactEmail({
+        from: email,
+        name,
+        message: `Subject: ${subject}\n\n${message}`,
+      })
+      console.log('Contact email notification sent for submission:', submission.id)
+    } catch (emailError) {
+      console.error('Failed to send contact email notification:', emailError)
+      // Don't fail the request if email fails, submission is already saved
+    }
 
     return NextResponse.json({
       success: true,
