@@ -34,7 +34,7 @@ interface Ad {
   duration: number
   playCount: number
   createdAt: string
-  airedAt: string
+  airDate: string
   tags: string[]
   station: {
     id: string
@@ -77,6 +77,7 @@ export default function AdDetailPage() {
       setLoading(true)
       const response = await fetch(`/api/ads/${params.id}`)
       const data = await response.json()
+      console.log(data)
 
       if (data.success) {
         setAd(data.data)
@@ -321,7 +322,7 @@ export default function AdDetailPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <FiCalendar />
-                          <span>{new Date(ad.airedAt).toLocaleDateString()}</span>
+                          <span>{new Date(ad.airDate).toLocaleDateString()}</span>
                         </div>
                       </div>
 
@@ -374,7 +375,7 @@ export default function AdDetailPage() {
                       <div>
                         <h3 className="text-lg font-bold mb-2">First Aired</h3>
                         <p className="text-gray-300">
-                          {new Date(ad.airedAt).toLocaleString()}
+                          {new Date(ad.airDate).toLocaleDateString()}
                         </p>
                       </div>
 

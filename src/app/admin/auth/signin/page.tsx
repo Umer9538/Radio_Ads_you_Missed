@@ -47,8 +47,9 @@ function AdminSigninForm() {
         // Check if user is admin
         const response = await fetch('/api/user/profile')
         const data = await response.json()
+        console.log('User profile data:', data)
 
-        if (data.success && (data.user.role === 'ADMIN' || data.user.role === 'SUPER_ADMIN')) {
+        if (data.success && (data.data.role === 'ADMIN' || data.data.role === 'SUPER_ADMIN')) {
           toast.success('Welcome back, Admin!')
           router.push(callbackUrl)
         } else {
