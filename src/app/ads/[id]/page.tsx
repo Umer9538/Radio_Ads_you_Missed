@@ -83,6 +83,7 @@ export default function AdDetailPage() {
         setAd(data.data)
         setPlayCount(data.data.playCount)
         // Fetch related ads
+        checkFavoriteStatus()
         fetchRelatedAds(data.data.category.id, data.data.id)
       }
     } catch (error) {
@@ -90,6 +91,18 @@ export default function AdDetailPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const checkFavoriteStatus = async () => {
+    try {
+      const response = await fetch(`/api/favorites/${params.id}`)
+      const data = await response.json()
+      if (data.success) {
+        setIsFavorited(data.data.isFavorited)
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error)
+  }
   }
 
   const fetchRelatedAds = async (categoryId: string, excludeId: string) => {
@@ -101,6 +114,28 @@ export default function AdDetailPage() {
       }
     } catch (error) {
       console.error('Error fetching related ads:', error)
+    }
+  }
+
+  const handleFavoriteToggle = () => {
+
+    try {
+      if (!isFavorited) {
+        fetch(`/api/favorites`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adId: ad?.id })
+        })
+      } else {
+        fetch(`/api/favorites/${ad?.id}`, {
+          method: 'DELETE'
+        })
+      }
+      setIsFavorited(!isFavorited)
+    } catch (error) {
+      alert('Failed to update favorites')
+      setIsFavorited(isFavorited) // revert state on failure
+      console.error('Error updating favorites:', error)
     }
   }
 
@@ -255,7 +290,7 @@ export default function AdDetailPage() {
                       {/* Floating Action Buttons */}
                       <div className="absolute top-4 right-4 flex gap-2">
                         <motion.button
-                          onClick={() => setIsFavorited(!isFavorited)}
+                          onClick={handleFavoriteToggle}
                           className="p-3 rounded-full bg-black/30 backdrop-blur-xl text-white"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
