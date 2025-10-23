@@ -57,7 +57,6 @@ export default function GlassmorphicCard({
       style={{
         rotateX,
         rotateY,
-        transformStyle: 'preserve-3d',
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -73,7 +72,7 @@ export default function GlassmorphicCard({
     >
       {/* Animated gradient background */}
       <motion.div
-        className="absolute inset-0 opacity-50"
+        className="absolute inset-0 opacity-50 pointer-events-none"
         animate={{
           background: [
             'radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)',
@@ -92,20 +91,14 @@ export default function GlassmorphicCard({
 
       {/* Glow effect */}
       <motion.div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
           background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), ${glowColor}, transparent 40%)`,
         }}
       />
 
-      {/* Content with 3D depth */}
-      <div
-        style={{
-          transform: 'translateZ(50px)',
-          transformStyle: 'preserve-3d',
-        }}
-        className="relative z-10"
-      >
+      {/* Content */}
+      <div className="relative z-10">
         {children}
       </div>
     </motion.div>
