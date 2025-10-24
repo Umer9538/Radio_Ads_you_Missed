@@ -31,16 +31,25 @@ export async function GET(request: Request) {
       include: {
         _count: {
           select: {
-            ads: true,
+            ads: {
+              where: {
+                status: 'PUBLISHED',
+              },
+            },
           },
         },
       },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: stations,
     })
+
+    // Cache for 5 minutes
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+
+    return response
   } catch (error) {
     console.error('Error fetching stations:', error)
     return NextResponse.json(

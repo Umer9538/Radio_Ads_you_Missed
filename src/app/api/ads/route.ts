@@ -159,40 +159,31 @@ export async function GET(request: Request) {
 
     const totalPages = Math.ceil(total / limit)
 
-    // Track search history if query exists and user is logged in
-    if (query && session?.user?.email) {
-      try {
-        const user = await prisma.user.findUnique({
-          where: { email: session.user.email },
-          select: { id: true },
-        })
-
-        if (user) {
-          // Store search history
-          await prisma.searchHistory.create({
-            data: {
-              userId: user.id,
-              query,
-              filters: {
-                stationId,
-                categoryId,
-                brand,
-                dateFrom,
-                dateTo,
-                hasOffer,
-                sortBy,
-              },
-              resultCount: total,
-              ipAddress: request.headers.get('x-forwarded-for') ||
-                         request.headers.get('x-real-ip') ||
-                         undefined,
-            },
-          })
-        }
-      } catch (error) {
+    // Track search history asynchronously (non-blocking)
+    if (query && session?.user?.id) {
+      // Fire and forget - don't await this
+      prisma.searchHistory.create({
+        data: {
+          userId: session.user.id,
+          query,
+          filters: {
+            stationId,
+            categoryId,
+            brand,
+            dateFrom,
+            dateTo,
+            hasOffer,
+            sortBy,
+          },
+          resultCount: total,
+          ipAddress: request.headers.get('x-forwarded-for') ||
+                     request.headers.get('x-real-ip') ||
+                     undefined,
+        },
+      }).catch((error) => {
         // Don't fail the request if search tracking fails
         console.error('Failed to track search:', error)
-      }
+      })
     }
 
     const response = NextResponse.json({

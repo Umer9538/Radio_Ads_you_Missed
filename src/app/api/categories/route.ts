@@ -31,7 +31,11 @@ export async function GET(request: Request) {
       include: {
         _count: {
           select: {
-            ads: true,
+            ads: {
+              where: {
+                status: 'PUBLISHED',
+              },
+            },
             children: true,
           },
         },
@@ -46,10 +50,15 @@ export async function GET(request: Request) {
       },
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: categories,
     })
+
+    // Cache for 5 minutes
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+
+    return response
   } catch (error) {
     console.error('Error fetching categories:', error)
     return NextResponse.json(
