@@ -104,6 +104,12 @@ export default auth((req) => {
 
   let response: NextResponse
 
+  // Redirect admins away from homepage to admin dashboard
+  if (pathname === '/' && isLoggedIn && (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN')) {
+    response = NextResponse.redirect(new URL('/admin', req.url))
+    return addSecurityHeaders(response)
+  }
+
   // Allow public routes and public API routes
   if (isPublicRoute || isPublicApiRoute) {
     response = NextResponse.next()

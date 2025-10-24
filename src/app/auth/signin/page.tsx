@@ -47,9 +47,20 @@ export default function SignInPage() {
       if (result?.error) {
         setError('Invalid email or password')
       } else if (result?.ok) {
-        // Redirect to home or callback URL
-        const callbackUrl = new URLSearchParams(window.location.search).get('callbackUrl') || '/'
-        router.push(callbackUrl)
+        // Get user session to check role
+        const { getSession } = await import('next-auth/react')
+        const session = await getSession()
+
+        // Redirect based on user role
+        const callbackUrl = new URLSearchParams(window.location.search).get('callbackUrl')
+
+        if (session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN') {
+          // Redirect admins to admin dashboard
+          router.push(callbackUrl || '/admin')
+        } else {
+          // Redirect regular users to home or callback URL
+          router.push(callbackUrl || '/')
+        }
         router.refresh()
       }
     } catch (err) {
